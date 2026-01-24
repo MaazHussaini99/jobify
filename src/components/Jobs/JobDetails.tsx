@@ -34,7 +34,7 @@ const JobDetails: React.FC = () => {
         const jobResponse: any = await client.graphql({
           query: getJobPosting,
           variables: { id },
-          authMode: 'userPool'
+          authMode: isAuthenticated ? 'userPool' : 'apiKey'
         });
 
         const fetchedJob = jobResponse.data?.getJobPosting;
@@ -45,17 +45,24 @@ const JobDetails: React.FC = () => {
 
         setJob(fetchedJob);
 
-        // Increment view count
-        await client.graphql({
-          query: updateJobPosting,
-          variables: {
-            input: {
-              id,
-              viewCount: (fetchedJob.viewCount || 0) + 1
-            }
-          },
-          authMode: 'userPool'
-        });
+        // Increment view count (only for authenticated users)
+        if (isAuthenticated) {
+          try {
+            await client.graphql({
+              query: updateJobPosting,
+              variables: {
+                input: {
+                  id,
+                  viewCount: (fetchedJob.viewCount || 0) + 1
+                }
+              },
+              authMode: 'userPool'
+            });
+          } catch (err) {
+            // Silently fail for view count increment
+            console.error('Failed to increment view count:', err);
+          }
+        }
 
         // Fetch applications if employer
         if (profile?.id === fetchedJob.employerId) {

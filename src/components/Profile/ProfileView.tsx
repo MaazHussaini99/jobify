@@ -12,7 +12,7 @@ const client = generateClient();
 
 const ProfileView: React.FC = () => {
   const { id } = useParams<{ id: string }>();
-  const { profile: currentUserProfile } = useAuth();
+  const { profile: currentUserProfile, isAuthenticated } = useAuth();
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [reviews, setReviews] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -26,16 +26,17 @@ const ProfileView: React.FC = () => {
 
       try {
         setIsLoading(true);
+        const authMode = isAuthenticated ? 'userPool' : 'apiKey';
         const [profileResponse, reviewsResponse]: any = await Promise.all([
           client.graphql({
             query: getUserProfile,
             variables: { id },
-            authMode: 'userPool'
+            authMode
           }),
           client.graphql({
             query: listReviewsByUser,
             variables: { revieweeId: id, limit: 10 },
-            authMode: 'userPool'
+            authMode
           })
         ]);
 
