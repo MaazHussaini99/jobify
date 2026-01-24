@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams, Link } from 'react-router-dom';
 import { generateClient } from 'aws-amplify/api';
 import { useAuth } from '../../contexts/AuthContext';
 import { UserProfile } from '../../types';
-import { getUserProfile, listConversationsByUser } from '../../graphql/queries';
+import { getUserProfile, listConversationsByUser, listProfessionals } from '../../graphql/queries';
 import { createConversation, createMessage, updateConversation } from '../../graphql/mutations';
 import { Loading } from '../Common';
 import './Messaging.css';
@@ -24,29 +24,75 @@ const NewConversation: React.FC = () => {
   const [isSending, setIsSending] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    const fetchTargetUser = async () => {
-      if (!targetUserId) {
-        setIsLoading(false);
-        return;
-      }
+  // User search state
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchResults, setSearchResults] = useState<UserProfile[]>([]);
+  const [isSearching, setIsSearching] = useState(false);
+  const [allUsers, setAllUsers] = useState<UserProfile[]>([]);
 
-      try {
-        const response: any = await client.graphql({
-          query: getUserProfile,
-          variables: { id: targetUserId },
-          authMode: 'userPool'
-        });
-        setTargetUser(response.data?.getUserProfile);
-      } catch (err: any) {
-        setError('Failed to load user');
-      } finally {
-        setIsLoading(false);
+  // Fetch all users on mount (for user selection)
+  useEffect(() => {
+    const fetchAllUsers = async () => {
+      if (targetUserId) {
+        // If we have a target user, fetch that specific user
+        try {
+          const response: any = await client.graphql({
+            query: getUserProfile,
+            variables: { id: targetUserId },
+            authMode: 'userPool'
+          });
+          setTargetUser(response.data?.getUserProfile);
+        } catch (err: any) {
+          setError('Failed to load user');
+        } finally {
+          setIsLoading(false);
+        }
+      } else {
+        // Fetch all users for selection
+        try {
+          const response: any = await client.graphql({
+            query: listProfessionals,
+            variables: { limit: 50 },
+            authMode: 'userPool'
+          });
+          const users = response.data?.listUserProfiles?.items || [];
+          // Filter out current user
+          const filteredUsers = users.filter((u: UserProfile) => u.id !== profile?.id);
+          setAllUsers(filteredUsers);
+          setSearchResults(filteredUsers);
+        } catch (err: any) {
+          console.error('Failed to load users:', err);
+        } finally {
+          setIsLoading(false);
+        }
       }
     };
 
-    fetchTargetUser();
-  }, [targetUserId]);
+    fetchAllUsers();
+  }, [targetUserId, profile?.id]);
+
+  // Filter users based on search query
+  useEffect(() => {
+    if (!searchQuery.trim()) {
+      setSearchResults(allUsers);
+      return;
+    }
+
+    setIsSearching(true);
+    const query = searchQuery.toLowerCase();
+    const filtered = allUsers.filter((user) =>
+      user.firstName.toLowerCase().includes(query) ||
+      user.lastName.toLowerCase().includes(query) ||
+      user.email.toLowerCase().includes(query) ||
+      (user.companyName && user.companyName.toLowerCase().includes(query))
+    );
+    setSearchResults(filtered);
+    setIsSearching(false);
+  }, [searchQuery, allUsers]);
+
+  const selectUser = (user: UserProfile) => {
+    setTargetUser(user);
+  };
 
   const handleSend = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -136,12 +182,60 @@ const NewConversation: React.FC = () => {
     );
   }
 
-  if (!targetUserId || !targetUser) {
+  if (!targetUser) {
     return (
       <div className="new-conversation">
-        <div className="new-conversation-content">
+        <div className="new-conversation-header">
           <h2>New Message</h2>
-          <p>Select a user to start a conversation with.</p>
+        </div>
+        <div className="new-conversation-content">
+          <div className="user-search">
+            <div className="form-group">
+              <label htmlFor="search">Search Users</label>
+              <input
+                type="text"
+                id="search"
+                placeholder="Search by name, email, or company..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+            </div>
+
+            {isSearching ? (
+              <Loading message="Searching..." />
+            ) : searchResults.length > 0 ? (
+              <div className="user-list">
+                {searchResults.map((user) => (
+                  <div
+                    key={user.id}
+                    className="user-list-item"
+                    onClick={() => selectUser(user)}
+                  >
+                    {user.profilePicture ? (
+                      <img src={user.profilePicture} alt="" className="user-avatar" />
+                    ) : (
+                      <div className="avatar-placeholder small">
+                        {user.firstName[0]}{user.lastName[0]}
+                      </div>
+                    )}
+                    <div className="user-info">
+                      <p className="user-name">{user.firstName} {user.lastName}</p>
+                      {user.headline && <p className="user-headline">{user.headline}</p>}
+                      {user.companyName && <p className="user-company">{user.companyName}</p>}
+                    </div>
+                    <span className="user-type-badge">{user.userType}</span>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="no-results">
+                <p>No users found. {allUsers.length === 0 && 'Be the first to invite others to join!'}</p>
+                <Link to="/professionals" className="btn btn-secondary">
+                  Browse Professionals
+                </Link>
+              </div>
+            )}
+          </div>
         </div>
       </div>
     );
@@ -154,6 +248,15 @@ const NewConversation: React.FC = () => {
       </div>
 
       <div className="new-conversation-content">
+        {!targetUserId && (
+          <button
+            type="button"
+            className="back-to-search"
+            onClick={() => setTargetUser(null)}
+          >
+            ← Back to user search
+          </button>
+        )}
         <div className="recipient-info">
           <label>To:</label>
           <div className="recipient">
