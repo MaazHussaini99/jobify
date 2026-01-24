@@ -41,7 +41,8 @@ const JobCard: React.FC<JobCardProps> = ({
       if (saved && savedJobId) {
         await client.graphql({
           query: deleteSavedJob,
-          variables: { input: { id: savedJobId } }
+          variables: { input: { id: savedJobId } },
+          authMode: 'userPool'
         });
         setSaved(false);
         onSaveChange?.(false);
@@ -54,7 +55,8 @@ const JobCard: React.FC<JobCardProps> = ({
               jobId: job.id,
               savedAt: new Date().toISOString()
             }
-          }
+          },
+          authMode: 'userPool'
         });
         setSaved(true);
         onSaveChange?.(true);

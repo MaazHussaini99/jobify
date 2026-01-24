@@ -28,7 +28,8 @@ const ConversationList: React.FC = () => {
 
         const response: any = await client.graphql({
           query: listConversationsByUser,
-          variables: { userId: profile.id }
+          variables: { userId: profile.id },
+          authMode: 'userPool'
         });
 
         let fetchedConversations = response.data?.listConversations?.items || [];

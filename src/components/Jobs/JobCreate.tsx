@@ -183,7 +183,8 @@ const JobCreate: React.FC = () => {
 
       const response: any = await client.graphql({
         query: createJobPosting,
-        variables: { input: jobInput }
+        variables: { input: jobInput },
+        authMode: 'userPool'
       });
 
       const createdJob = response.data?.createJobPosting;
