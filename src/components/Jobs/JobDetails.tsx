@@ -33,7 +33,8 @@ const JobDetails: React.FC = () => {
 
         const jobResponse: any = await client.graphql({
           query: getJobPosting,
-          variables: { id }
+          variables: { id },
+          authMode: 'userPool'
         });
 
         const fetchedJob = jobResponse.data?.getJobPosting;
@@ -52,14 +53,16 @@ const JobDetails: React.FC = () => {
               id,
               viewCount: (fetchedJob.viewCount || 0) + 1
             }
-          }
+          },
+          authMode: 'userPool'
         });
 
         // Fetch applications if employer
         if (profile?.id === fetchedJob.employerId) {
           const applicationsResponse: any = await client.graphql({
             query: listApplicationsByJob,
-            variables: { jobId: id, limit: 50 }
+            variables: { jobId: id, limit: 50 },
+            authMode: 'userPool'
           });
           setApplications(applicationsResponse.data?.listJobApplications?.items || []);
         }
@@ -68,7 +71,8 @@ const JobDetails: React.FC = () => {
         if (profile?.userType === 'PROFESSIONAL') {
           const userApplicationsResponse: any = await client.graphql({
             query: listApplicationsByJob,
-            variables: { jobId: id, limit: 100 }
+            variables: { jobId: id, limit: 100 },
+            authMode: 'userPool'
           });
           const userApp = userApplicationsResponse.data?.listJobApplications?.items?.find(
             (app: JobApplication) => app.applicantId === profile.id

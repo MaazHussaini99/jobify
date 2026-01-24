@@ -30,7 +30,8 @@ const ReviewList: React.FC<ReviewListProps> = ({ userId, showTitle = true }) => 
           revieweeId: userId,
           limit: 10,
           nextToken: loadMore ? nextToken : null
-        }
+        },
+        authMode: 'userPool'
       });
 
       const fetchedReviews = response.data?.listReviews?.items || [];

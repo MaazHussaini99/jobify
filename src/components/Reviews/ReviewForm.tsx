@@ -97,7 +97,8 @@ const ReviewForm: React.FC<ReviewFormProps> = ({
 
       const response: any = await client.graphql({
         query: createReview,
-        variables: { input: reviewInput }
+        variables: { input: reviewInput },
+        authMode: 'userPool'
       });
 
       const newReview = response.data?.createReview;
@@ -115,7 +116,8 @@ const ReviewForm: React.FC<ReviewFormProps> = ({
             averageRating: newAverageRating,
             totalReviews: newTotalReviews
           }
-        }
+        },
+        authMode: 'userPool'
       });
 
       if (onSuccess && newReview) {

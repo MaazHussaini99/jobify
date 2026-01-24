@@ -52,7 +52,8 @@ const ProfessionalSearch: React.FC = () => {
           filter,
           limit: 20,
           nextToken: loadMore ? nextToken : null
-        }
+        },
+        authMode: 'userPool'
       });
 
       let fetchedProfs = response.data?.listUserProfiles?.items || [];

@@ -25,13 +25,15 @@ const Dashboard: React.FC = () => {
         if (profile.userType === 'EMPLOYER') {
           const response: any = await client.graphql({
             query: getJobsByEmployer,
-            variables: { employerId: profile.id, limit: 10 }
+            variables: { employerId: profile.id, limit: 10 },
+            authMode: 'userPool'
           });
           setJobs(response.data?.listJobPostings?.items || []);
         } else {
           const response: any = await client.graphql({
             query: listApplicationsByApplicant,
-            variables: { applicantId: profile.id, limit: 10 }
+            variables: { applicantId: profile.id, limit: 10 },
+            authMode: 'userPool'
           });
           setApplications(response.data?.listJobApplications?.items || []);
         }

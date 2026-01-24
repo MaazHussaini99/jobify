@@ -35,7 +35,8 @@ const JobApply: React.FC = () => {
       try {
         const response: any = await client.graphql({
           query: getJobPosting,
-          variables: { id }
+          variables: { id },
+          authMode: 'userPool'
         });
         setJob(response.data?.getJobPosting);
       } catch (err: any) {
@@ -110,7 +111,8 @@ const JobApply: React.FC = () => {
             status: 'PENDING',
             appliedAt: new Date().toISOString()
           }
-        }
+        },
+        authMode: 'userPool'
       });
 
       navigate(`/jobs/${id}`, { state: { applied: true } });

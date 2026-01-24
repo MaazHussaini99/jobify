@@ -196,7 +196,8 @@ const ProfileEdit: React.FC = () => {
             availability,
             preferredJobTypes: preferredJobTypes.length > 0 ? preferredJobTypes : null
           }
-        }
+        },
+        authMode: 'userPool'
       });
 
       await refreshProfile();

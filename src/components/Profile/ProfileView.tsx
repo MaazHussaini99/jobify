@@ -29,11 +29,13 @@ const ProfileView: React.FC = () => {
         const [profileResponse, reviewsResponse]: any = await Promise.all([
           client.graphql({
             query: getUserProfile,
-            variables: { id }
+            variables: { id },
+            authMode: 'userPool'
           }),
           client.graphql({
             query: listReviewsByUser,
-            variables: { revieweeId: id, limit: 10 }
+            variables: { revieweeId: id, limit: 10 },
+            authMode: 'userPool'
           })
         ]);
 

@@ -34,7 +34,8 @@ const NewConversation: React.FC = () => {
       try {
         const response: any = await client.graphql({
           query: getUserProfile,
-          variables: { id: targetUserId }
+          variables: { id: targetUserId },
+          authMode: 'userPool'
         });
         setTargetUser(response.data?.getUserProfile);
       } catch (err: any) {
@@ -59,7 +60,8 @@ const NewConversation: React.FC = () => {
       // Check for existing conversation
       const existingConvResponse: any = await client.graphql({
         query: listConversationsByUser,
-        variables: { userId: profile.id }
+        variables: { userId: profile.id },
+        authMode: 'userPool'
       });
 
       const existingConversations = existingConvResponse.data?.listConversations?.items || [];
@@ -83,7 +85,8 @@ const NewConversation: React.FC = () => {
               jobId: jobId || null,
               status: 'ACTIVE'
             }
-          }
+          },
+          authMode: 'userPool'
         });
         conversationId = convResponse.data?.createConversation?.id;
       }
@@ -99,7 +102,8 @@ const NewConversation: React.FC = () => {
             messageType: 'TEXT',
             isRead: false
           }
-        }
+        },
+        authMode: 'userPool'
       });
 
       // Update conversation
@@ -112,7 +116,8 @@ const NewConversation: React.FC = () => {
             lastMessagePreview: message.trim().substring(0, 100),
             user2UnreadCount: 1
           }
-        }
+        },
+        authMode: 'userPool'
       });
 
       navigate(`/messages/${conversationId}`);

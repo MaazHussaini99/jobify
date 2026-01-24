@@ -37,7 +37,8 @@ const ChatWindow: React.FC = () => {
 
       const convResponse: any = await client.graphql({
         query: getConversation,
-        variables: { id: conversationId }
+        variables: { id: conversationId },
+        authMode: 'userPool'
       });
 
       const conv = convResponse.data?.getConversation;
@@ -45,7 +46,8 @@ const ChatWindow: React.FC = () => {
 
       const messagesResponse: any = await client.graphql({
         query: listMessagesByConversation,
-        variables: { conversationId, limit: 100 }
+        variables: { conversationId, limit: 100 },
+        authMode: 'userPool'
       });
 
       const fetchedMessages = messagesResponse.data?.listMessages?.items || [];
@@ -69,7 +71,8 @@ const ChatWindow: React.FC = () => {
                 isRead: true,
                 readAt: new Date().toISOString()
               }
-            }
+            },
+            authMode: 'userPool'
           });
         }
 
@@ -83,7 +86,8 @@ const ChatWindow: React.FC = () => {
                 id: conversationId,
                 [isUser1 ? 'user1UnreadCount' : 'user2UnreadCount']: 0
               }
-            }
+            },
+            authMode: 'userPool'
           });
         }
       }
@@ -111,7 +115,8 @@ const ChatWindow: React.FC = () => {
     const setupSubscription = () => {
       subscription = (client.graphql({
         query: onCreateMessage,
-        variables: { conversationId }
+        variables: { conversationId },
+        authMode: 'userPool'
       }) as any).subscribe({
         next: ({ data }: any) => {
           const newMsg = data?.onCreateMessage;
@@ -128,7 +133,8 @@ const ChatWindow: React.FC = () => {
                     isRead: true,
                     readAt: new Date().toISOString()
                   }
-                }
+                },
+                authMode: 'userPool'
               });
             }
           }
@@ -168,7 +174,8 @@ const ChatWindow: React.FC = () => {
             messageType: 'TEXT',
             isRead: false
           }
-        }
+        },
+        authMode: 'userPool'
       });
 
       // Update conversation
@@ -183,7 +190,8 @@ const ChatWindow: React.FC = () => {
             [isUser1 ? 'user2UnreadCount' : 'user1UnreadCount']:
               (isUser1 ? conversation.user2UnreadCount || 0 : conversation.user1UnreadCount || 0) + 1
           }
-        }
+        },
+        authMode: 'userPool'
       });
     } catch (err: any) {
       setError(err.message || 'Failed to send message');
