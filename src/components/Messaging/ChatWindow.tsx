@@ -106,35 +106,43 @@ const ChatWindow: React.FC = () => {
   useEffect(() => {
     if (!conversationId) return;
 
-    const subscription = client.graphql({
-      query: onCreateMessage,
-      variables: { conversationId }
-    }).subscribe({
-      next: ({ data }: any) => {
-        const newMsg = data?.onCreateMessage;
-        if (newMsg) {
-          setMessages(prev => [...prev, newMsg]);
+    let subscription: { unsubscribe: () => void } | null = null;
 
-          // Mark as read if from other user
-          if (profile && newMsg.senderId !== profile.id) {
-            client.graphql({
-              query: updateMessage,
-              variables: {
-                input: {
-                  id: newMsg.id,
-                  isRead: true,
-                  readAt: new Date().toISOString()
+    const setupSubscription = () => {
+      subscription = (client.graphql({
+        query: onCreateMessage,
+        variables: { conversationId }
+      }) as any).subscribe({
+        next: ({ data }: any) => {
+          const newMsg = data?.onCreateMessage;
+          if (newMsg) {
+            setMessages(prev => [...prev, newMsg]);
+
+            // Mark as read if from other user
+            if (profile && newMsg.senderId !== profile.id) {
+              client.graphql({
+                query: updateMessage,
+                variables: {
+                  input: {
+                    id: newMsg.id,
+                    isRead: true,
+                    readAt: new Date().toISOString()
+                  }
                 }
-              }
-            });
+              });
+            }
           }
-        }
-      },
-      error: (err: any) => console.error('Subscription error:', err)
-    });
+        },
+        error: (err: any) => console.error('Subscription error:', err)
+      });
+    };
+
+    setupSubscription();
 
     return () => {
-      subscription.unsubscribe();
+      if (subscription) {
+        subscription.unsubscribe();
+      }
     };
   }, [conversationId, profile]);
 

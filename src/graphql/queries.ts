@@ -292,7 +292,9 @@ export const getJobApplication = /* GraphQL */ `
       job {
         id
         title
-        companyName: employer { companyName }
+        employer {
+          companyName
+        }
       }
       applicantId
       applicant {

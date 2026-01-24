@@ -50,10 +50,10 @@ const ProfileCard: React.FC<ProfileCardProps> = ({
             </p>
           )}
 
-          {profile.averageRating > 0 && (
+          {(profile.averageRating ?? 0) > 0 && (
             <div className="card-rating">
-              <StarRating rating={profile.averageRating} readonly size="small" />
-              <span>({profile.totalReviews})</span>
+              <StarRating rating={profile.averageRating ?? 0} readonly size="small" />
+              <span>({profile.totalReviews ?? 0})</span>
             </div>
           )}
 
@@ -72,7 +72,7 @@ const ProfileCard: React.FC<ProfileCardProps> = ({
             {profile.hourlyRate && (
               <span className="meta-rate">${profile.hourlyRate}/hr</span>
             )}
-            {profile.totalJobsCompleted > 0 && (
+            {(profile.totalJobsCompleted ?? 0) > 0 && (
               <span className="meta-jobs">{profile.totalJobsCompleted} jobs</span>
             )}
           </div>
