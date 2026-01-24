@@ -106,10 +106,10 @@ const ProfileView: React.FC = () => {
                   {profile.location}
                 </span>
               )}
-              {profile.averageRating > 0 && (
+              {(profile.averageRating ?? 0) > 0 && (
                 <span className="meta-item">
-                  <StarRating rating={profile.averageRating} readonly size="small" />
-                  <span>({profile.totalReviews} reviews)</span>
+                  <StarRating rating={profile.averageRating ?? 0} readonly size="small" />
+                  <span>({profile.totalReviews ?? 0} reviews)</span>
                 </span>
               )}
               {profile.userType === 'PROFESSIONAL' && profile.hourlyRate && (
