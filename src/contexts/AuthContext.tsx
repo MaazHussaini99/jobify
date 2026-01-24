@@ -102,8 +102,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           userAttributes: {
             email,
             given_name: firstName,
-            family_name: lastName,
-            'custom:userType': userType
+            family_name: lastName
           }
         }
       });
