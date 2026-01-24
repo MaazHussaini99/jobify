@@ -1,0 +1,437 @@
+# Professional Networking Platform - GraphQL Schema
+# This schema defines all data models for the Amplify backend
+
+# User Profile - Stores professional information
+type UserProfile @model @auth(rules: [
+  { allow: owner },
+  { allow: private, operations: [read] }
+]) {
+  id: ID!
+  userId: String! @index(name: "byUserId")
+  email: String!
+  firstName: String!
+  lastName: String!
+  headline: String
+  bio: String
+  profilePicture: String
+  coverPhoto: String
+  location: String
+  phone: String
+  website: String
+  linkedIn: String
+  github: String
+
+  # Professional Details
+  userType: UserType! # PROFESSIONAL or EMPLOYER
+  companyName: String
+  companySize: String
+  industry: String
+
+  # Skills & Experience
+  skills: [Skill]
+  experience: [Experience]
+  education: [Education]
+  certifications: [Certification]
+
+  # Availability
+  availability: Availability
+  hourlyRate: Float
+  preferredJobTypes: [JobType]
+
+  # Stats
+  totalJobsCompleted: Int @default(value: "0")
+  averageRating: Float @default(value: "0")
+  totalReviews: Int @default(value: "0")
+
+  # Timestamps
+  createdAt: AWSDateTime!
+  updatedAt: AWSDateTime!
+
+  # Relations
+  jobPostings: [JobPosting] @hasMany(indexName: "byEmployer", fields: ["id"])
+  applications: [JobApplication] @hasMany(indexName: "byApplicant", fields: ["id"])
+  reviewsGiven: [Review] @hasMany(indexName: "byReviewer", fields: ["id"])
+  reviewsReceived: [Review] @hasMany(indexName: "byReviewee", fields: ["id"])
+  conversationsAsUser1: [Conversation] @hasMany(indexName: "byUser1", fields: ["id"])
+  conversationsAsUser2: [Conversation] @hasMany(indexName: "byUser2", fields: ["id"])
+}
+
+type Skill {
+  name: String!
+  level: SkillLevel
+  yearsOfExperience: Int
+  endorsed: Int
+}
+
+type Experience {
+  id: String!
+  title: String!
+  company: String!
+  location: String
+  startDate: String!
+  endDate: String
+  current: Boolean
+  description: String
+}
+
+type Education {
+  id: String!
+  institution: String!
+  degree: String!
+  fieldOfStudy: String
+  startDate: String
+  endDate: String
+  description: String
+}
+
+type Certification {
+  id: String!
+  name: String!
+  issuingOrganization: String!
+  issueDate: String
+  expirationDate: String
+  credentialId: String
+  credentialUrl: String
+}
+
+type Availability {
+  status: AvailabilityStatus!
+  hoursPerWeek: Int
+  startDate: String
+  timezone: String
+  preferredSchedule: String
+}
+
+enum UserType {
+  PROFESSIONAL
+  EMPLOYER
+}
+
+enum SkillLevel {
+  BEGINNER
+  INTERMEDIATE
+  ADVANCED
+  EXPERT
+}
+
+enum AvailabilityStatus {
+  AVAILABLE
+  PARTIALLY_AVAILABLE
+  NOT_AVAILABLE
+  OPEN_TO_OFFERS
+}
+
+# Job Posting - Employers create job opportunities
+type JobPosting @model @auth(rules: [
+  { allow: owner },
+  { allow: private, operations: [read] }
+]) {
+  id: ID!
+  employerId: ID! @index(name: "byEmployer")
+  employer: UserProfile @belongsTo(fields: ["employerId"])
+
+  # Job Details
+  title: String!
+  description: String!
+  shortDescription: String
+  requirements: [String]
+  responsibilities: [String]
+  requiredSkills: [String]!
+  preferredSkills: [String]
+
+  # Job Type & Duration
+  jobType: JobType!
+  duration: JobDuration!
+  durationValue: Int
+  experienceLevel: ExperienceLevel!
+
+  # Compensation
+  compensationType: CompensationType!
+  minBudget: Float
+  maxBudget: Float
+  currency: String @default(value: "USD")
+
+  # Location
+  locationType: LocationType!
+  location: String
+  timezone: String
+
+  # Status
+  status: JobStatus! @default(value: "OPEN")
+  applicationDeadline: AWSDateTime
+  startDate: AWSDateTime
+
+  # Stats
+  viewCount: Int @default(value: "0")
+  applicationCount: Int @default(value: "0")
+
+  # Timestamps
+  createdAt: AWSDateTime!
+  updatedAt: AWSDateTime!
+
+  # Relations
+  applications: [JobApplication] @hasMany(indexName: "byJob", fields: ["id"])
+  reviews: [Review] @hasMany(indexName: "byJob", fields: ["id"])
+  conversations: [Conversation] @hasMany(indexName: "byJob", fields: ["id"])
+  savedBy: [SavedJob] @hasMany(indexName: "byJob", fields: ["id"])
+}
+
+enum JobType {
+  FULL_TIME
+  PART_TIME
+  CONTRACT
+  FREELANCE
+  INTERNSHIP
+}
+
+enum JobDuration {
+  LESS_THAN_WEEK
+  ONE_TO_FOUR_WEEKS
+  ONE_TO_THREE_MONTHS
+  THREE_TO_SIX_MONTHS
+  MORE_THAN_SIX_MONTHS
+  ONGOING
+}
+
+enum ExperienceLevel {
+  ENTRY
+  JUNIOR
+  MID
+  SENIOR
+  LEAD
+  EXECUTIVE
+}
+
+enum CompensationType {
+  HOURLY
+  FIXED
+  SALARY
+  NEGOTIABLE
+}
+
+enum LocationType {
+  REMOTE
+  ONSITE
+  HYBRID
+}
+
+enum JobStatus {
+  DRAFT
+  OPEN
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+  CLOSED
+}
+
+# Job Application - Professionals apply to jobs
+type JobApplication @model @auth(rules: [
+  { allow: owner },
+  { allow: private, operations: [read, update] }
+]) {
+  id: ID!
+  jobId: ID! @index(name: "byJob")
+  job: JobPosting @belongsTo(fields: ["jobId"])
+  applicantId: ID! @index(name: "byApplicant")
+  applicant: UserProfile @belongsTo(fields: ["applicantId"])
+
+  # Application Details
+  coverLetter: String
+  proposedRate: Float
+  estimatedDuration: String
+  availability: String
+  portfolioLinks: [String]
+
+  # Status
+  status: ApplicationStatus! @default(value: "PENDING")
+
+  # Timestamps
+  appliedAt: AWSDateTime!
+  updatedAt: AWSDateTime!
+  reviewedAt: AWSDateTime
+
+  # Employer Notes (private)
+  employerNotes: String
+}
+
+enum ApplicationStatus {
+  PENDING
+  REVIEWING
+  SHORTLISTED
+  ACCEPTED
+  REJECTED
+  WITHDRAWN
+}
+
+# Review - Ratings and reviews for both parties
+type Review @model @auth(rules: [
+  { allow: owner },
+  { allow: private, operations: [read] }
+]) {
+  id: ID!
+  reviewerId: ID! @index(name: "byReviewer")
+  reviewer: UserProfile @belongsTo(fields: ["reviewerId"])
+  revieweeId: ID! @index(name: "byReviewee")
+  reviewee: UserProfile @belongsTo(fields: ["revieweeId"])
+  jobId: ID! @index(name: "byJob")
+  job: JobPosting @belongsTo(fields: ["jobId"])
+
+  # Review Content
+  rating: Float!
+  title: String
+  content: String!
+
+  # Detailed Ratings
+  communicationRating: Float
+  qualityRating: Float
+  timelinessRating: Float
+  professionalismRating: Float
+
+  # Review Type
+  reviewType: ReviewType!
+
+  # Flags
+  isPublic: Boolean @default(value: "true")
+  isVerified: Boolean @default(value: "false")
+
+  # Response
+  response: String
+  responseDate: AWSDateTime
+
+  # Timestamps
+  createdAt: AWSDateTime!
+  updatedAt: AWSDateTime!
+}
+
+enum ReviewType {
+  EMPLOYER_TO_PROFESSIONAL
+  PROFESSIONAL_TO_EMPLOYER
+}
+
+# Conversation - Messaging between users
+type Conversation @model @auth(rules: [
+  { allow: owner },
+  { allow: private, operations: [read, update] }
+]) {
+  id: ID!
+  user1Id: ID! @index(name: "byUser1")
+  user1: UserProfile @belongsTo(fields: ["user1Id"])
+  user2Id: ID! @index(name: "byUser2")
+  user2: UserProfile @belongsTo(fields: ["user2Id"])
+
+  # Related Job (optional)
+  jobId: ID @index(name: "byJob")
+  job: JobPosting @belongsTo(fields: ["jobId"])
+
+  # Conversation Details
+  lastMessageAt: AWSDateTime
+  lastMessagePreview: String
+
+  # Read Status
+  user1UnreadCount: Int @default(value: "0")
+  user2UnreadCount: Int @default(value: "0")
+
+  # Status
+  status: ConversationStatus @default(value: "ACTIVE")
+
+  # Timestamps
+  createdAt: AWSDateTime!
+  updatedAt: AWSDateTime!
+
+  # Relations
+  messages: [Message] @hasMany(indexName: "byConversation", fields: ["id"])
+}
+
+enum ConversationStatus {
+  ACTIVE
+  ARCHIVED
+  BLOCKED
+}
+
+# Message - Individual messages in a conversation
+type Message @model @auth(rules: [
+  { allow: owner },
+  { allow: private, operations: [read, update] }
+]) {
+  id: ID!
+  conversationId: ID! @index(name: "byConversation", sortKeyFields: ["createdAt"])
+  conversation: Conversation @belongsTo(fields: ["conversationId"])
+  senderId: ID! @index(name: "bySender")
+
+  # Message Content
+  content: String!
+  messageType: MessageType @default(value: "TEXT")
+  attachments: [Attachment]
+
+  # Status
+  isRead: Boolean @default(value: "false")
+  readAt: AWSDateTime
+  isEdited: Boolean @default(value: "false")
+  isDeleted: Boolean @default(value: "false")
+
+  # Timestamps
+  createdAt: AWSDateTime!
+  updatedAt: AWSDateTime!
+}
+
+type Attachment {
+  id: String!
+  fileName: String!
+  fileType: String!
+  fileSize: Int!
+  url: String!
+}
+
+enum MessageType {
+  TEXT
+  FILE
+  IMAGE
+  SYSTEM
+}
+
+# Saved/Bookmarked Jobs
+type SavedJob @model @auth(rules: [{ allow: owner }]) {
+  id: ID!
+  userId: ID! @index(name: "byUser")
+  jobId: ID! @index(name: "byJob")
+  job: JobPosting @belongsTo(fields: ["jobId"])
+  savedAt: AWSDateTime!
+  notes: String
+}
+
+# Notifications
+type Notification @model @auth(rules: [{ allow: owner }]) {
+  id: ID!
+  userId: ID! @index(name: "byUser", sortKeyFields: ["createdAt"])
+
+  # Notification Details
+  type: NotificationType!
+  title: String!
+  message: String!
+
+  # Related Entities
+  relatedJobId: ID
+  relatedUserId: ID
+  relatedApplicationId: ID
+  relatedMessageId: ID
+
+  # Status
+  isRead: Boolean @default(value: "false")
+  readAt: AWSDateTime
+
+  # Action
+  actionUrl: String
+
+  # Timestamps
+  createdAt: AWSDateTime!
+}
+
+enum NotificationType {
+  NEW_APPLICATION
+  APPLICATION_STATUS
+  NEW_MESSAGE
+  NEW_REVIEW
+  JOB_MATCH
+  PROFILE_VIEW
+  SYSTEM
+}

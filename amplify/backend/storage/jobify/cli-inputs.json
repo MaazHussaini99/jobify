@@ -1,0 +1,16 @@
+{
+  "resourceName": "jobify",
+  "policyUUID": "4c0bad6b",
+  "bucketName": "jobify53edb77fd7b84c5b876bdd95ceaa7c50",
+  "storageAccess": "authAndGuest",
+  "guestAccess": [
+    "READ"
+  ],
+  "authAccess": [
+    "CREATE_AND_UPDATE",
+    "READ",
+    "DELETE"
+  ],
+  "triggerFunction": "NONE",
+  "groupAccess": {}
+}

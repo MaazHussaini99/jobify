@@ -1,0 +1,26 @@
+{
+  "dev": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-jobify-dev-4d254-authRole",
+      "UnauthRoleArn": "arn:aws:iam::532874607103:role/amplify-jobify-dev-4d254-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::532874607103:role/amplify-jobify-dev-4d254-authRole",
+      "Region": "us-east-2",
+      "DeploymentBucketName": "amplify-jobify-dev-4d254-deployment",
+      "UnauthRoleName": "amplify-jobify-dev-4d254-unauthRole",
+      "StackName": "amplify-jobify-dev-4d254",
+      "StackId": "arn:aws:cloudformation:us-east-2:532874607103:stack/amplify-jobify-dev-4d254/9018a500-f966-11f0-99ce-0ada8e4e3f23",
+      "AmplifyAppId": "deya3bhyyoz7n"
+    },
+    "categories": {
+      "auth": {
+        "jobify18018b92": {}
+      },
+      "api": {
+        "jobify": {}
+      },
+      "storage": {
+        "jobify": {}
+      }
+    }
+  }
+}
