@@ -18,7 +18,7 @@ const AVAILABILITY_OPTIONS: { value: AvailabilityStatus; label: string }[] = [
 
 const ProfessionalSearch: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
-  const { profile } = useAuth();
+  const { profile, isAuthenticated } = useAuth();
 
   const [professionals, setProfessionals] = useState<UserProfile[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -53,7 +53,7 @@ const ProfessionalSearch: React.FC = () => {
           limit: 20,
           nextToken: loadMore ? nextToken : null
         },
-        authMode: 'userPool'
+        authMode: isAuthenticated ? 'userPool' : 'apiKey'
       });
 
       let fetchedProfs = response.data?.listUserProfiles?.items || [];

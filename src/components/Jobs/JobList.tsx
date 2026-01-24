@@ -57,7 +57,7 @@ const JobList: React.FC = () => {
           limit: 20,
           nextToken: loadMore ? nextToken : null
         },
-        authMode: 'userPool'
+        authMode: isAuthenticated ? 'userPool' : 'apiKey'
       });
 
       const fetchedJobs = response.data?.listJobPostings?.items || [];

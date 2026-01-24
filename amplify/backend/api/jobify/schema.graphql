@@ -4,7 +4,8 @@
 # User Profile - Stores professional information
 type UserProfile @model @auth(rules: [
   { allow: owner },
-  { allow: private, operations: [read] }
+  { allow: private, operations: [read] },
+  { allow: public, provider: apiKey, operations: [read] }
 ]) {
   id: ID!
   userId: String! @index(name: "byUserId")
@@ -124,7 +125,8 @@ enum AvailabilityStatus {
 # Job Posting - Employers create job opportunities
 type JobPosting @model @auth(rules: [
   { allow: owner },
-  { allow: private, operations: [read] }
+  { allow: private, operations: [read] },
+  { allow: public, provider: apiKey, operations: [read] }
 ]) {
   id: ID!
   employerId: ID! @index(name: "byEmployer")
@@ -266,7 +268,8 @@ enum ApplicationStatus {
 # Review - Ratings and reviews for both parties
 type Review @model @auth(rules: [
   { allow: owner },
-  { allow: private, operations: [read] }
+  { allow: private, operations: [read] },
+  { allow: public, provider: apiKey, operations: [read] }
 ]) {
   id: ID!
   reviewerId: ID! @index(name: "byReviewer")
