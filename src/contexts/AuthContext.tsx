@@ -49,7 +49,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     try {
       const response: any = await client.graphql({
         query: getUserProfileByUserId,
-        variables: { userId }
+        variables: { userId },
+        authMode: 'userPool'
       });
       const profiles = response.data?.listUserProfiles?.items || [];
       if (profiles.length > 0) {
@@ -133,24 +134,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         confirmationCode: code
       });
 
-      // Create user profile after confirmation
-      const pendingProfile = sessionStorage.getItem('pendingProfile');
-      if (pendingProfile) {
-        const profileData = JSON.parse(pendingProfile);
-        await client.graphql({
-          query: createUserProfile,
-          variables: {
-            input: {
-              userId: profileData.userId,
-              email: profileData.email,
-              firstName: profileData.firstName,
-              lastName: profileData.lastName,
-              userType: profileData.userType
-            }
-          }
-        });
-        sessionStorage.removeItem('pendingProfile');
-      }
+      // Profile will be created after sign-in when user is authenticated
     } catch (err: any) {
       setError(err.message || 'Confirmation failed');
       throw err;
@@ -170,6 +154,31 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       });
 
       if (isSignedIn) {
+        // Check if there's a pending profile to create (new user after confirmation)
+        const pendingProfile = sessionStorage.getItem('pendingProfile');
+        if (pendingProfile) {
+          const profileData = JSON.parse(pendingProfile);
+          try {
+            await client.graphql({
+              query: createUserProfile,
+              variables: {
+                input: {
+                  userId: profileData.userId,
+                  email: profileData.email,
+                  firstName: profileData.firstName,
+                  lastName: profileData.lastName,
+                  userType: profileData.userType
+                }
+              },
+              authMode: 'userPool'
+            });
+            sessionStorage.removeItem('pendingProfile');
+          } catch (profileErr) {
+            console.error('Error creating profile:', profileErr);
+            // Profile might already exist, continue anyway
+          }
+        }
+
         await checkAuthState();
       }
     } catch (err: any) {
