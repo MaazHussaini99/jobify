@@ -171,6 +171,9 @@ type JobPosting @model @auth(rules: [
 
   # Relations
   applications: [JobApplication] @hasMany(indexName: "byJob", fields: ["id"])
+  reviews: [Review] @hasMany(indexName: "byJob", fields: ["id"])
+  conversations: [Conversation] @hasMany(indexName: "byJob", fields: ["id"])
+  savedBy: [SavedJob] @hasMany(indexName: "byJob", fields: ["id"])
 }
 
 enum JobType {
