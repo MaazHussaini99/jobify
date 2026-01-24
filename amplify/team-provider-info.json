@@ -20,6 +20,12 @@
       },
       "storage": {
         "jobify": {}
+      },
+      "hosting": {
+        "amplifyhosting": {
+          "appId": "deya3bhyyoz7n",
+          "type": "cicd"
+        }
       }
     }
   }
