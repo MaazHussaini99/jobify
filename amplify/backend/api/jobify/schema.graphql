@@ -440,13 +440,13 @@ enum NotificationType {
 }
 
 # Custom Types for Resume Parsing
-type ParsedSkill {
+type ParsedSkill @aws_cognito_user_pools {
   name: String!
   level: String
   yearsOfExperience: Int
 }
 
-type ParsedExperience {
+type ParsedExperience @aws_cognito_user_pools {
   id: String!
   title: String!
   company: String!
@@ -457,7 +457,7 @@ type ParsedExperience {
   description: String
 }
 
-type ParsedEducation {
+type ParsedEducation @aws_cognito_user_pools {
   id: String!
   institution: String!
   degree: String!
@@ -467,7 +467,7 @@ type ParsedEducation {
   description: String
 }
 
-type ParsedCertification {
+type ParsedCertification @aws_cognito_user_pools {
   id: String!
   name: String!
   issuingOrganization: String!
@@ -477,7 +477,7 @@ type ParsedCertification {
   credentialUrl: String
 }
 
-type ParsedResume {
+type ParsedResume @aws_cognito_user_pools {
   firstName: String
   lastName: String
   email: String
