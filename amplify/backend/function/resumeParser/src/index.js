@@ -110,10 +110,54 @@ exports.handler = async (event) => {
   console.log('Processing resume content, length:', content.length, 'fileType:', fileType);
 
   try {
-    // Prepare the prompt for Claude
-    const fullPrompt = RESUME_PARSING_PROMPT + content;
+    // Check if content is base64 (PDF uploaded as data URL)
+    let processedContent = content;
+    let messageContent;
 
-    console.log('Calling Bedrock with prompt length:', fullPrompt.length);
+    if (content.startsWith('data:')) {
+      // Extract base64 data and media type
+      const matches = content.match(/^data:([^;]+);base64,(.+)$/);
+      if (matches) {
+        const mediaType = matches[1];
+        const base64Data = matches[2];
+
+        console.log('Detected base64 content, media type:', mediaType);
+
+        // For PDFs, use Claude's document feature
+        if (mediaType === 'application/pdf') {
+          messageContent = [
+            {
+              type: 'document',
+              source: {
+                type: 'base64',
+                media_type: 'application/pdf',
+                data: base64Data
+              }
+            },
+            {
+              type: 'text',
+              text: RESUME_PARSING_PROMPT
+            }
+          ];
+        } else {
+          // For other base64 content, try to decode as text
+          try {
+            processedContent = Buffer.from(base64Data, 'base64').toString('utf-8');
+            messageContent = RESUME_PARSING_PROMPT + processedContent;
+          } catch (e) {
+            console.log('Could not decode base64 as text, using raw');
+            messageContent = RESUME_PARSING_PROMPT + content;
+          }
+        }
+      } else {
+        messageContent = RESUME_PARSING_PROMPT + content;
+      }
+    } else {
+      // Plain text content
+      messageContent = RESUME_PARSING_PROMPT + content;
+    }
+
+    console.log('Calling Bedrock with message type:', Array.isArray(messageContent) ? 'multipart' : 'text');
 
     // Call Amazon Bedrock with Claude using cross-region inference profile
     const command = new InvokeModelCommand({
@@ -126,7 +170,7 @@ exports.handler = async (event) => {
         messages: [
           {
             role: 'user',
-            content: fullPrompt
+            content: messageContent
           }
         ],
         temperature: 0.1 // Low temperature for consistent parsing
