@@ -1,4 +1,5 @@
 const { BedrockRuntimeClient, InvokeModelCommand } = require('@aws-sdk/client-bedrock-runtime');
+const pdfParse = require('pdf-parse');
 
 // Configure Bedrock client with external AWS account credentials if provided
 const getBedrockClient = () => {
@@ -111,8 +112,7 @@ exports.handler = async (event) => {
 
   try {
     // Check if content is base64 (PDF uploaded as data URL)
-    let processedContent = content;
-    let messageContent;
+    let textContent = content;
 
     if (content.startsWith('data:')) {
       // Extract base64 data and media type
@@ -123,41 +123,38 @@ exports.handler = async (event) => {
 
         console.log('Detected base64 content, media type:', mediaType);
 
-        // For PDFs, use Claude's document feature
+        // For PDFs, extract text using pdf-parse
         if (mediaType === 'application/pdf') {
-          messageContent = [
-            {
-              type: 'document',
-              source: {
-                type: 'base64',
-                media_type: 'application/pdf',
-                data: base64Data
-              }
-            },
-            {
-              type: 'text',
-              text: RESUME_PARSING_PROMPT
-            }
-          ];
+          try {
+            const pdfBuffer = Buffer.from(base64Data, 'base64');
+            const pdfData = await pdfParse(pdfBuffer);
+            textContent = pdfData.text;
+            console.log('Extracted text from PDF, length:', textContent.length);
+          } catch (pdfError) {
+            console.error('Failed to parse PDF:', pdfError.message);
+            return {
+              skills: [],
+              experience: [],
+              education: [],
+              certifications: [],
+              parseError: 'Failed to extract text from PDF. Please try uploading a text-based resume.'
+            };
+          }
         } else {
           // For other base64 content, try to decode as text
           try {
-            processedContent = Buffer.from(base64Data, 'base64').toString('utf-8');
-            messageContent = RESUME_PARSING_PROMPT + processedContent;
+            textContent = Buffer.from(base64Data, 'base64').toString('utf-8');
           } catch (e) {
             console.log('Could not decode base64 as text, using raw');
-            messageContent = RESUME_PARSING_PROMPT + content;
           }
         }
-      } else {
-        messageContent = RESUME_PARSING_PROMPT + content;
       }
-    } else {
-      // Plain text content
-      messageContent = RESUME_PARSING_PROMPT + content;
     }
 
-    console.log('Calling Bedrock with message type:', Array.isArray(messageContent) ? 'multipart' : 'text');
+    // Prepare the prompt with extracted text
+    const messageContent = RESUME_PARSING_PROMPT + textContent;
+
+    console.log('Calling Bedrock with text content, length:', messageContent.length);
 
     // Call Amazon Bedrock with Claude using cross-region inference profile
     const command = new InvokeModelCommand({
