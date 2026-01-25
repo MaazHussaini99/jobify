@@ -22,6 +22,9 @@ import { ProfessionalSearch } from './components/Search';
 // Messaging Components
 import { MessagesPage } from './components/Messaging';
 
+// Resume Components
+import { ResumeUpload, ResumeExport } from './components/Resume';
+
 // Pages
 import { HomePage, Dashboard } from './pages';
 
@@ -232,6 +235,28 @@ const AppRoutes: React.FC = () => {
           <ProtectedRoute>
             <AppLayout showFooter={false}>
               <MessagesPage />
+            </AppLayout>
+          </ProtectedRoute>
+        }
+      />
+
+      {/* Resume Routes */}
+      <Route
+        path="/resume/upload"
+        element={
+          <ProtectedRoute>
+            <AppLayout>
+              <ResumeUpload />
+            </AppLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/resume/export"
+        element={
+          <ProtectedRoute>
+            <AppLayout>
+              <ResumeExport />
             </AppLayout>
           </ProtectedRoute>
         }
