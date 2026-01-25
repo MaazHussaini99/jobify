@@ -210,26 +210,32 @@ exports.handler = async (event) => {
       };
     }
 
-    // Ensure all arrays exist
-    parsedResume.skills = parsedResume.skills || [];
-    parsedResume.experience = parsedResume.experience || [];
-    parsedResume.education = parsedResume.education || [];
-    parsedResume.certifications = parsedResume.certifications || [];
+    // Ensure all arrays exist and filter out null/invalid entries
+    parsedResume.skills = (parsedResume.skills || []).filter(s => s && s.name);
+    parsedResume.experience = (parsedResume.experience || []).filter(e => e && e.title);
+    parsedResume.education = (parsedResume.education || []).filter(e => e && e.institution);
+    parsedResume.certifications = (parsedResume.certifications || []).filter(c => c && c.name);
 
-    // Add unique IDs if missing
+    // Add unique IDs if missing and ensure required fields
     parsedResume.experience = parsedResume.experience.map((exp, idx) => ({
       ...exp,
-      id: exp.id || `exp-${Date.now()}-${idx}`
+      id: exp.id || `exp-${Date.now()}-${idx}`,
+      title: exp.title || 'Unknown Position',
+      company: exp.company || 'Unknown Company'
     }));
 
     parsedResume.education = parsedResume.education.map((edu, idx) => ({
       ...edu,
-      id: edu.id || `edu-${Date.now()}-${idx}`
+      id: edu.id || `edu-${Date.now()}-${idx}`,
+      institution: edu.institution || 'Unknown Institution',
+      degree: edu.degree || 'Unknown Degree'
     }));
 
     parsedResume.certifications = parsedResume.certifications.map((cert, idx) => ({
       ...cert,
-      id: cert.id || `cert-${Date.now()}-${idx}`
+      id: cert.id || `cert-${Date.now()}-${idx}`,
+      name: cert.name || 'Unknown Certification',
+      issuingOrganization: cert.issuingOrganization || 'Unknown'
     }));
 
     console.log('Returning parsed resume with', parsedResume.skills?.length, 'skills,',

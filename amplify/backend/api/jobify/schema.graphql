@@ -470,7 +470,7 @@ type ParsedEducation @aws_cognito_user_pools {
 type ParsedCertification @aws_cognito_user_pools {
   id: String!
   name: String!
-  issuingOrganization: String!
+  issuingOrganization: String
   issueDate: String
   expirationDate: String
   credentialId: String
