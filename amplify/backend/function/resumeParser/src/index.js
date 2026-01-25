@@ -99,9 +99,9 @@ exports.handler = async (event) => {
 
     console.log('Calling Bedrock with prompt length:', fullPrompt.length);
 
-    // Call Amazon Bedrock with Claude
+    // Call Amazon Bedrock with Claude using cross-region inference profile
     const command = new InvokeModelCommand({
-      modelId: 'anthropic.claude-3-haiku-20240307-v1:0', // Using Haiku for cost efficiency
+      modelId: 'us.anthropic.claude-3-haiku-20240307-v1:0', // Using inference profile for on-demand
       contentType: 'application/json',
       accept: 'application/json',
       body: JSON.stringify({
