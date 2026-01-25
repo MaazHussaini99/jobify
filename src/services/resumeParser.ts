@@ -97,9 +97,29 @@ export const parseResume = async (content: string, fileType?: string): Promise<P
 
     const parsed = response.data?.parseResume;
 
-    if (parsed && !parsed.parseError) {
+    // Check if we have meaningful data (even with partial errors)
+    const hasData = parsed && (
+      parsed.firstName ||
+      parsed.lastName ||
+      parsed.email ||
+      (parsed.skills && parsed.skills.length > 0) ||
+      (parsed.experience && parsed.experience.length > 0) ||
+      (parsed.education && parsed.education.length > 0)
+    );
+
+    if (hasData && !parsed.parseError) {
       console.log('Successfully parsed resume with AWS Bedrock');
-      return parsed as ParsedResumeData;
+
+      // Clean up any null entries in arrays
+      const cleanedData: ParsedResumeData = {
+        ...parsed,
+        skills: (parsed.skills || []).filter((s: any) => s && s.name),
+        experience: (parsed.experience || []).filter((e: any) => e && e.title),
+        education: (parsed.education || []).filter((e: any) => e && e.institution),
+        certifications: (parsed.certifications || []).filter((c: any) => c && c.name)
+      };
+
+      return cleanedData;
     }
 
     // If there was a parse error from Bedrock, log it and fall back
