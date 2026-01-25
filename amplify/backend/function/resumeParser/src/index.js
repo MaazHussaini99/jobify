@@ -65,31 +65,39 @@ RESUME CONTENT:
 exports.handler = async (event) => {
   console.log('Resume parser invoked with event:', JSON.stringify(event, null, 2));
 
-  // Handle different event sources (API Gateway, direct invocation, etc.)
-  let body;
-  if (event.body) {
-    body = typeof event.body === 'string' ? JSON.parse(event.body) : event.body;
-  } else {
-    body = event;
-  }
+  // AppSync @function directive sends arguments directly in event.arguments
+  // Also handle API Gateway format for testing
+  let content, fileType;
 
-  const { content, fileType } = body;
+  if (event.arguments) {
+    // AppSync @function format
+    content = event.arguments.content;
+    fileType = event.arguments.fileType;
+  } else if (event.body) {
+    // API Gateway format
+    const body = typeof event.body === 'string' ? JSON.parse(event.body) : event.body;
+    content = body.content;
+    fileType = body.fileType;
+  } else {
+    // Direct invocation
+    content = event.content;
+    fileType = event.fileType;
+  }
 
   if (!content) {
+    console.error('No content provided');
     return {
-      statusCode: 400,
-      headers: {
-        'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Headers': '*'
-      },
-      body: JSON.stringify({ error: 'Resume content is required' })
+      parseError: 'Resume content is required'
     };
   }
+
+  console.log('Processing resume content, length:', content.length, 'fileType:', fileType);
 
   try {
     // Prepare the prompt for Claude
     const fullPrompt = RESUME_PARSING_PROMPT + content;
+
+    console.log('Calling Bedrock with prompt length:', fullPrompt.length);
 
     // Call Amazon Bedrock with Claude
     const command = new InvokeModelCommand({
@@ -112,10 +120,12 @@ exports.handler = async (event) => {
     const response = await bedrockClient.send(command);
     const responseBody = JSON.parse(new TextDecoder().decode(response.body));
 
-    console.log('Bedrock response:', JSON.stringify(responseBody, null, 2));
+    console.log('Bedrock response received');
 
     // Extract the text content from Claude's response
     const assistantMessage = responseBody.content?.[0]?.text || '';
+
+    console.log('Assistant message length:', assistantMessage.length);
 
     // Parse the JSON from the response
     let parsedResume;
@@ -124,15 +134,16 @@ exports.handler = async (event) => {
       const jsonMatch = assistantMessage.match(/\{[\s\S]*\}/);
       if (jsonMatch) {
         parsedResume = JSON.parse(jsonMatch[0]);
+        console.log('Successfully parsed JSON from response');
       } else {
         throw new Error('No JSON found in response');
       }
     } catch (parseError) {
       console.error('Failed to parse Bedrock response as JSON:', parseError);
-      console.log('Raw response:', assistantMessage);
+      console.log('Raw response:', assistantMessage.substring(0, 500));
 
       // Return a minimal structure if parsing fails
-      parsedResume = {
+      return {
         skills: [],
         experience: [],
         education: [],
@@ -163,46 +174,33 @@ exports.handler = async (event) => {
       id: cert.id || `cert-${Date.now()}-${idx}`
     }));
 
-    return {
-      statusCode: 200,
-      headers: {
-        'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Headers': '*'
-      },
-      body: JSON.stringify(parsedResume)
-    };
+    console.log('Returning parsed resume with', parsedResume.skills?.length, 'skills,',
+      parsedResume.experience?.length, 'experiences,',
+      parsedResume.education?.length, 'education entries');
+
+    // Return the data directly for AppSync
+    return parsedResume;
 
   } catch (error) {
-    console.error('Error calling Bedrock:', error);
+    console.error('Error calling Bedrock:', error.name, error.message);
 
     // Check if it's an access denied error
     if (error.name === 'AccessDeniedException') {
       return {
-        statusCode: 403,
-        headers: {
-          'Content-Type': 'application/json',
-          'Access-Control-Allow-Origin': '*',
-          'Access-Control-Allow-Headers': '*'
-        },
-        body: JSON.stringify({
-          error: 'Bedrock access not configured. Please enable Claude model access in AWS Bedrock console.',
-          fallback: true
-        })
+        skills: [],
+        experience: [],
+        education: [],
+        certifications: [],
+        parseError: 'Bedrock access not configured. Please enable Claude model access in AWS Bedrock console.'
       };
     }
 
     return {
-      statusCode: 500,
-      headers: {
-        'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Headers': '*'
-      },
-      body: JSON.stringify({
-        error: error.message || 'Failed to parse resume',
-        fallback: true
-      })
+      skills: [],
+      experience: [],
+      education: [],
+      certifications: [],
+      parseError: error.message || 'Failed to parse resume'
     };
   }
 };

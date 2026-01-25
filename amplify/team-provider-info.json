@@ -26,6 +26,9 @@
           "appId": "deya3bhyyoz7n",
           "type": "cicd"
         }
+      },
+      "function": {
+        "resumeParser": {}
       }
     }
   }
