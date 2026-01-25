@@ -1,0 +1,9 @@
+{
+  "name": "resume-parser",
+  "version": "1.0.0",
+  "description": "Lambda function to parse resumes using AWS Bedrock",
+  "main": "index.js",
+  "dependencies": {
+    "@aws-sdk/client-bedrock-runtime": "^3.478.0"
+  }
+}

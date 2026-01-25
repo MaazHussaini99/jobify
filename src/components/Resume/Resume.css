@@ -1,0 +1,490 @@
+/* Resume Upload */
+.resume-upload {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.upload-card {
+  background: white;
+  border-radius: 12px;
+  padding: 2rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.upload-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.upload-header svg {
+  color: #667eea;
+  margin-bottom: 1rem;
+}
+
+.upload-header h2 {
+  color: #1a1a2e;
+  margin-bottom: 0.5rem;
+}
+
+.upload-header p {
+  color: #666;
+  font-size: 0.95rem;
+}
+
+.upload-zone {
+  border: 2px dashed #d1d5db;
+  border-radius: 12px;
+  padding: 3rem 2rem;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  background: #fafafa;
+}
+
+.upload-zone:hover {
+  border-color: #667eea;
+  background: #f5f7ff;
+}
+
+.upload-zone.has-file {
+  border-style: solid;
+  border-color: #667eea;
+  background: #f5f7ff;
+}
+
+.upload-zone svg {
+  color: #9ca3af;
+  margin-bottom: 1rem;
+}
+
+.upload-zone p {
+  color: #374151;
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+}
+
+.upload-zone .file-types {
+  color: #9ca3af;
+  font-size: 0.85rem;
+}
+
+.selected-file {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+}
+
+.selected-file svg {
+  color: #667eea;
+  margin: 0;
+}
+
+.selected-file .file-name {
+  font-weight: 600;
+  color: #1a1a2e;
+}
+
+.selected-file .file-size {
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.upload-actions {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.upload-features {
+  margin-top: 2rem;
+  padding-top: 2rem;
+  border-top: 1px solid #e5e7eb;
+}
+
+.upload-features h3 {
+  color: #374151;
+  font-size: 0.95rem;
+  margin-bottom: 1rem;
+}
+
+.upload-features ul {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 0.75rem;
+}
+
+.upload-features li {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.upload-features li svg {
+  color: #10b981;
+  flex-shrink: 0;
+}
+
+/* Resume Preview */
+.resume-preview {
+  background: white;
+  border-radius: 12px;
+  padding: 2rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.resume-preview h2 {
+  color: #1a1a2e;
+  margin-bottom: 0.5rem;
+}
+
+.preview-info {
+  color: #666;
+  margin-bottom: 1.5rem;
+}
+
+.preview-sections {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.preview-section {
+  padding: 1.25rem;
+  background: #f9fafb;
+  border-radius: 8px;
+}
+
+.preview-section h3 {
+  color: #1a1a2e;
+  font-size: 1rem;
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.preview-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 0.75rem;
+}
+
+.preview-grid div {
+  color: #374151;
+  font-size: 0.9rem;
+}
+
+.preview-grid strong {
+  color: #666;
+}
+
+.skills-preview {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.skills-preview .skill-tag {
+  background: #e5e7eb;
+  color: #374151;
+  padding: 0.35rem 0.75rem;
+  border-radius: 16px;
+  font-size: 0.85rem;
+}
+
+.preview-item {
+  padding: 1rem 0;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.preview-item:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.preview-item h4 {
+  color: #1a1a2e;
+  margin-bottom: 0.25rem;
+}
+
+.preview-item .company,
+.preview-item .institution,
+.preview-item .issuer {
+  color: #667eea;
+  font-weight: 500;
+  margin-bottom: 0.25rem;
+}
+
+.preview-item .dates {
+  color: #888;
+  font-size: 0.85rem;
+  margin-bottom: 0.5rem;
+}
+
+.preview-item .description {
+  color: #666;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.preview-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #e5e7eb;
+}
+
+/* Resume Export */
+.resume-export {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.export-card {
+  background: white;
+  border-radius: 12px;
+  padding: 2rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.export-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.export-header svg {
+  color: #667eea;
+  margin-bottom: 1rem;
+}
+
+.export-header h2 {
+  color: #1a1a2e;
+  margin-bottom: 0.5rem;
+}
+
+.export-header p {
+  color: #666;
+}
+
+.template-options {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.template-option {
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 1rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: center;
+}
+
+.template-option:hover {
+  border-color: #667eea;
+}
+
+.template-option.selected {
+  border-color: #667eea;
+  background: #f5f7ff;
+}
+
+.template-preview {
+  height: 120px;
+  background: #f3f4f6;
+  border-radius: 4px;
+  margin-bottom: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.template-preview svg {
+  color: #9ca3af;
+}
+
+.template-option h4 {
+  color: #1a1a2e;
+  margin-bottom: 0.25rem;
+}
+
+.template-option p {
+  color: #666;
+  font-size: 0.85rem;
+}
+
+.export-options {
+  margin-bottom: 2rem;
+}
+
+.export-options h3 {
+  color: #374151;
+  font-size: 1rem;
+  margin-bottom: 1rem;
+}
+
+.checkbox-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.checkbox-group label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  color: #374151;
+}
+
+.checkbox-group input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  accent-color: #667eea;
+}
+
+.export-actions {
+  display: flex;
+  justify-content: center;
+}
+
+/* Resume PDF Template */
+.resume-pdf {
+  width: 210mm;
+  min-height: 297mm;
+  padding: 20mm;
+  background: white;
+  font-family: 'Georgia', serif;
+  font-size: 11pt;
+  line-height: 1.5;
+  color: #333;
+}
+
+.resume-pdf-header {
+  text-align: center;
+  margin-bottom: 20px;
+  padding-bottom: 15px;
+  border-bottom: 2px solid #667eea;
+}
+
+.resume-pdf-header h1 {
+  font-size: 24pt;
+  color: #1a1a2e;
+  margin-bottom: 5px;
+}
+
+.resume-pdf-header .headline {
+  font-size: 12pt;
+  color: #667eea;
+  font-style: italic;
+}
+
+.resume-pdf-contact {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 15px;
+  margin-top: 10px;
+  font-size: 10pt;
+  color: #666;
+}
+
+.resume-pdf-section {
+  margin-bottom: 20px;
+}
+
+.resume-pdf-section h2 {
+  font-size: 14pt;
+  color: #667eea;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  border-bottom: 1px solid #e5e7eb;
+  padding-bottom: 5px;
+  margin-bottom: 15px;
+}
+
+.resume-pdf-item {
+  margin-bottom: 15px;
+}
+
+.resume-pdf-item h3 {
+  font-size: 12pt;
+  color: #1a1a2e;
+  margin-bottom: 2px;
+}
+
+.resume-pdf-item .subtitle {
+  font-weight: 600;
+  color: #667eea;
+}
+
+.resume-pdf-item .dates {
+  font-size: 10pt;
+  color: #888;
+  float: right;
+}
+
+.resume-pdf-item p {
+  margin-top: 5px;
+  text-align: justify;
+}
+
+.resume-pdf-skills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.resume-pdf-skills .skill {
+  background: #f3f4f6;
+  padding: 4px 12px;
+  border-radius: 4px;
+  font-size: 10pt;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .resume-upload,
+  .resume-export {
+    padding: 1rem;
+  }
+
+  .upload-card,
+  .export-card,
+  .resume-preview {
+    padding: 1.5rem;
+  }
+
+  .upload-zone {
+    padding: 2rem 1rem;
+  }
+
+  .preview-actions,
+  .upload-actions {
+    flex-direction: column;
+  }
+
+  .preview-actions button,
+  .upload-actions button {
+    width: 100%;
+  }
+}
+
+@media print {
+  .resume-pdf {
+    width: 100%;
+    padding: 0;
+    box-shadow: none;
+  }
+}
