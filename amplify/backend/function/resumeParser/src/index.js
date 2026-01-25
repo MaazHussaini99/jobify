@@ -1,6 +1,22 @@
 const { BedrockRuntimeClient, InvokeModelCommand } = require('@aws-sdk/client-bedrock-runtime');
 
-const bedrockClient = new BedrockRuntimeClient({ region: process.env.AWS_REGION || 'us-east-1' });
+// Configure Bedrock client with external AWS account credentials if provided
+const getBedrockClient = () => {
+  const config = {
+    region: process.env.BEDROCK_REGION || 'us-east-1'
+  };
+
+  // Use external account credentials if provided
+  if (process.env.BEDROCK_ACCESS_KEY_ID && process.env.BEDROCK_SECRET_ACCESS_KEY) {
+    config.credentials = {
+      accessKeyId: process.env.BEDROCK_ACCESS_KEY_ID,
+      secretAccessKey: process.env.BEDROCK_SECRET_ACCESS_KEY
+    };
+    console.log('Using external AWS account for Bedrock');
+  }
+
+  return new BedrockRuntimeClient(config);
+};
 
 const RESUME_PARSING_PROMPT = `You are an expert resume parser. Analyze the following resume content and extract structured information. Return ONLY a valid JSON object with no additional text or explanation.
 
@@ -117,6 +133,7 @@ exports.handler = async (event) => {
       })
     });
 
+    const bedrockClient = getBedrockClient();
     const response = await bedrockClient.send(command);
     const responseBody = JSON.parse(new TextDecoder().decode(response.body));
 

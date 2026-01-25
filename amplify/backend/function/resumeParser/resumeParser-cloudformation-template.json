@@ -15,6 +15,22 @@
     },
     "s3Key": {
       "Type": "String"
+    },
+    "bedrockAccessKeyId": {
+      "Type": "String",
+      "Default": "",
+      "Description": "AWS Access Key ID for Bedrock account (optional, for cross-account access)"
+    },
+    "bedrockSecretAccessKey": {
+      "Type": "String",
+      "Default": "",
+      "NoEcho": true,
+      "Description": "AWS Secret Access Key for Bedrock account (optional, for cross-account access)"
+    },
+    "bedrockRegion": {
+      "Type": "String",
+      "Default": "us-east-1",
+      "Description": "AWS Region for Bedrock service"
     }
   },
   "Conditions": {
@@ -56,7 +72,10 @@
         "Environment": {
           "Variables": {
             "ENV": { "Ref": "env" },
-            "REGION": { "Ref": "AWS::Region" }
+            "REGION": { "Ref": "AWS::Region" },
+            "BEDROCK_ACCESS_KEY_ID": { "Ref": "bedrockAccessKeyId" },
+            "BEDROCK_SECRET_ACCESS_KEY": { "Ref": "bedrockSecretAccessKey" },
+            "BEDROCK_REGION": { "Ref": "bedrockRegion" }
           }
         }
       }
