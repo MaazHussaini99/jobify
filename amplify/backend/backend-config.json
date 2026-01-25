@@ -1,4 +1,11 @@
 {
+  "function": {
+    "resumeParser": {
+      "build": true,
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda"
+    }
+  },
   "api": {
     "jobify": {
       "dependsOn": [

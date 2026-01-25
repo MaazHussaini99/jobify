@@ -411,3 +411,55 @@ export const incrementJobViewCount = /* GraphQL */ `
     }
   }
 `;
+
+// AI Resume Parsing using AWS Bedrock
+export const parseResume = /* GraphQL */ `
+  mutation ParseResume($content: String!, $fileType: String) {
+    parseResume(content: $content, fileType: $fileType) {
+      firstName
+      lastName
+      email
+      phone
+      location
+      headline
+      bio
+      linkedIn
+      github
+      website
+      skills {
+        name
+        level
+        yearsOfExperience
+      }
+      experience {
+        id
+        title
+        company
+        location
+        startDate
+        endDate
+        current
+        description
+      }
+      education {
+        id
+        institution
+        degree
+        fieldOfStudy
+        startDate
+        endDate
+        description
+      }
+      certifications {
+        id
+        name
+        issuingOrganization
+        issueDate
+        expirationDate
+        credentialId
+        credentialUrl
+      }
+      parseError
+    }
+  }
+`;

@@ -1,5 +1,11 @@
 // Resume Parser Service
 // This service handles parsing resume content and extracting structured data
+// Uses AWS Bedrock (Claude) for AI-powered parsing with local fallback
+
+import { generateClient } from 'aws-amplify/api';
+import { parseResume as parseResumeMutation } from '../graphql/mutations';
+
+const client = generateClient();
 
 export interface ParsedResumeData {
   firstName?: string;
@@ -79,24 +85,33 @@ const DATE_PATTERNS = [
 ];
 
 export const parseResume = async (content: string, fileType?: string): Promise<ParsedResumeData> => {
-  // Try to call the AI parsing API first
+  // Try to call the AWS Bedrock-powered parsing via GraphQL
   try {
-    const response = await fetch(`${process.env.REACT_APP_API_URL || ''}/api/parse-resume`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ content, fileType }),
+    console.log('Attempting AI resume parsing with AWS Bedrock...');
+
+    const response: any = await client.graphql({
+      query: parseResumeMutation,
+      variables: { content, fileType },
+      authMode: 'userPool'
     });
 
-    if (response.ok) {
-      return await response.json();
+    const parsed = response.data?.parseResume;
+
+    if (parsed && !parsed.parseError) {
+      console.log('Successfully parsed resume with AWS Bedrock');
+      return parsed as ParsedResumeData;
     }
-  } catch (err) {
-    console.log('AI parsing unavailable, using fallback parser');
+
+    // If there was a parse error from Bedrock, log it and fall back
+    if (parsed?.parseError) {
+      console.log('Bedrock parsing had issues:', parsed.parseError);
+    }
+  } catch (err: any) {
+    console.log('AI parsing unavailable, using fallback parser:', err.message || err);
   }
 
   // Fallback to client-side parsing
+  console.log('Using local fallback parser');
   return parseResumeLocally(content);
 };
 

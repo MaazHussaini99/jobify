@@ -3,7 +3,7 @@ import { uploadData, getUrl } from 'aws-amplify/storage';
 import { generateClient } from 'aws-amplify/api';
 import { useAuth } from '../../contexts/AuthContext';
 import { updateUserProfile } from '../../graphql/mutations';
-import { parseResumeLocally, ParsedResumeData } from '../../services/resumeParser';
+import { parseResume, ParsedResumeData } from '../../services/resumeParser';
 import { Loading } from '../Common';
 import './Resume.css';
 
@@ -103,8 +103,8 @@ const ResumeUpload: React.FC = () => {
   };
 
   const parseResumeWithAI = async (content: string): Promise<ParsedResumeData> => {
-    // Use the resume parser service (falls back to local parsing if API unavailable)
-    return parseResumeLocally(content);
+    // Use AWS Bedrock via the resume parser service (falls back to local parsing if unavailable)
+    return parseResume(content, selectedFile?.type);
   };
 
   const handleApplyToProfile = async () => {
@@ -307,7 +307,7 @@ const ResumeUpload: React.FC = () => {
             <line x1="9" y1="15" x2="15" y2="15"></line>
           </svg>
           <h2>Upload Your Resume</h2>
-          <p>Upload your resume and we'll automatically extract your information using AI</p>
+          <p>Upload your resume and we'll automatically extract your information using AI powered by AWS Bedrock</p>
         </div>
 
         {error && <div className="alert alert-error">{error}</div>}
