@@ -55,6 +55,8 @@ type UserProfile @model @auth(rules: [
   reviewsReceived: [Review] @hasMany(indexName: "byReviewee", fields: ["id"])
   conversationsAsUser1: [Conversation] @hasMany(indexName: "byUser1", fields: ["id"])
   conversationsAsUser2: [Conversation] @hasMany(indexName: "byUser2", fields: ["id"])
+  meetingsOrganized: [Meeting] @hasMany(indexName: "byOrganizer", fields: ["id"])
+  meetingsAsParticipant: [Meeting] @hasMany(indexName: "byProfessional", fields: ["id"])
 }
 
 type Skill {
@@ -176,6 +178,7 @@ type JobPosting @model @auth(rules: [
   reviews: [Review] @hasMany(indexName: "byJob", fields: ["id"])
   conversations: [Conversation] @hasMany(indexName: "byJob", fields: ["id"])
   savedBy: [SavedJob] @hasMany(indexName: "byJob", fields: ["id"])
+  meetings: [Meeting] @hasMany(indexName: "byJob", fields: ["id"])
 }
 
 enum JobType {
@@ -493,6 +496,53 @@ type ParsedResume @aws_cognito_user_pools {
   education: [ParsedEducation]
   certifications: [ParsedCertification]
   parseError: String
+}
+
+# Scheduled Meetings
+type Meeting @model @auth(rules: [
+  { allow: owner },
+  { allow: private, operations: [read, update] }
+]) {
+  id: ID!
+  organizerId: ID! @index(name: "byOrganizer")
+  organizer: UserProfile @belongsTo(fields: ["organizerId"])
+
+  # Participants
+  professionalId: ID! @index(name: "byProfessional")
+  professional: UserProfile @belongsTo(fields: ["professionalId"])
+  adminEmail: String! # Always admin@nextonnect.com
+
+  # Related Job (optional)
+  jobId: ID @index(name: "byJob")
+  job: JobPosting @belongsTo(fields: ["jobId"])
+
+  # Meeting Details
+  title: String!
+  description: String
+  scheduledDate: AWSDateTime!
+  duration: Int! # Duration in minutes
+  timezone: String
+  meetingLink: String
+
+  # Status
+  status: MeetingStatus! @default(value: "PENDING")
+
+  # Notes
+  organizerNotes: String
+  professionalNotes: String
+  adminNotes: String
+
+  # Timestamps
+  createdAt: AWSDateTime!
+  updatedAt: AWSDateTime!
+}
+
+enum MeetingStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+  COMPLETED
+  RESCHEDULED
 }
 
 # Custom Mutation for AI Resume Parsing using Bedrock

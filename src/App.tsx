@@ -22,6 +22,9 @@ import { ProfessionalSearch } from './components/Search';
 // Messaging Components
 import { MessagesPage } from './components/Messaging';
 
+// Meeting Components
+import { ScheduleMeeting } from './components/Meetings';
+
 // Resume Components
 import { ResumeUpload, ResumeExport } from './components/Resume';
 
@@ -235,6 +238,18 @@ const AppRoutes: React.FC = () => {
           <ProtectedRoute>
             <AppLayout showFooter={false}>
               <MessagesPage />
+            </AppLayout>
+          </ProtectedRoute>
+        }
+      />
+
+      {/* Meetings */}
+      <Route
+        path="/meetings/schedule/:professionalId"
+        element={
+          <ProtectedRoute>
+            <AppLayout>
+              <ScheduleMeeting />
             </AppLayout>
           </ProtectedRoute>
         }

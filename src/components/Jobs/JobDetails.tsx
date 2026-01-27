@@ -23,6 +23,8 @@ const JobDetails: React.FC = () => {
   const [hasApplied, setHasApplied] = useState(false);
 
   const isOwner = profile?.id === job?.employerId;
+  // Hide company info for all users except the job owner
+  const showCompanyInfo = isOwner;
 
   useEffect(() => {
     const fetchJobDetails = async () => {
@@ -155,24 +157,45 @@ const JobDetails: React.FC = () => {
           <div className="job-header-card">
             <div className="job-header-top">
               <div className="employer-info-large">
-                {job.employer?.profilePicture ? (
-                  <img src={job.employer.profilePicture} alt="" className="employer-logo" />
-                ) : (
-                  <div className="employer-logo placeholder">
-                    {job.employer?.companyName?.[0] || 'C'}
-                  </div>
-                )}
-                <div>
-                  <Link to={`/profile/${job.employerId}`} className="employer-link">
-                    {job.employer?.companyName || 'Company'}
-                  </Link>
-                  {job.employer?.averageRating && job.employer.averageRating > 0 && (
-                    <div className="employer-rating">
-                      <StarRating rating={job.employer.averageRating} readonly size="small" />
-                      <span>({job.employer?.totalReviews || 0} reviews)</span>
+                {showCompanyInfo ? (
+                  <>
+                    {job.employer?.profilePicture ? (
+                      <img src={job.employer.profilePicture} alt="" className="employer-logo" />
+                    ) : (
+                      <div className="employer-logo placeholder">
+                        {job.employer?.companyName?.[0] || 'C'}
+                      </div>
+                    )}
+                    <div>
+                      <Link to={`/profile/${job.employerId}`} className="employer-link">
+                        {job.employer?.companyName || 'Company'}
+                      </Link>
+                      {job.employer?.averageRating && job.employer.averageRating > 0 && (
+                        <div className="employer-rating">
+                          <StarRating rating={job.employer.averageRating} readonly size="small" />
+                          <span>({job.employer?.totalReviews || 0} reviews)</span>
+                        </div>
+                      )}
                     </div>
-                  )}
-                </div>
+                  </>
+                ) : (
+                  <>
+                    <div className="employer-logo placeholder verified">
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                        <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                      </svg>
+                    </div>
+                    <div>
+                      <span className="employer-verified-badge">
+                        Verified Employer via Nextonnect
+                      </span>
+                      <p className="employer-verified-note">
+                        Company details available after application
+                      </p>
+                    </div>
+                  </>
+                )}
               </div>
               <span className={`job-status status-${job.status.toLowerCase()}`}>
                 {job.status}
@@ -393,25 +416,43 @@ const JobDetails: React.FC = () => {
             </dl>
           </div>
 
-          <div className="sidebar-card">
-            <h3>About the Company</h3>
-            <Link to={`/profile/${job.employerId}`} className="company-preview">
-              {job.employer?.profilePicture ? (
-                <img src={job.employer.profilePicture} alt="" />
-              ) : (
-                <div className="avatar-placeholder">
-                  {job.employer?.companyName?.[0] || 'C'}
+          {showCompanyInfo ? (
+            <div className="sidebar-card">
+              <h3>About the Company</h3>
+              <Link to={`/profile/${job.employerId}`} className="company-preview">
+                {job.employer?.profilePicture ? (
+                  <img src={job.employer.profilePicture} alt="" />
+                ) : (
+                  <div className="avatar-placeholder">
+                    {job.employer?.companyName?.[0] || 'C'}
+                  </div>
+                )}
+                <div>
+                  <p className="company-name">{job.employer?.companyName}</p>
+                  <p className="company-location">{job.employer?.location}</p>
                 </div>
-              )}
-              <div>
-                <p className="company-name">{job.employer?.companyName}</p>
-                <p className="company-location">{job.employer?.location}</p>
+              </Link>
+              <Link to={`/profile/${job.employerId}`} className="btn btn-secondary btn-sm btn-block">
+                View Company Profile
+              </Link>
+            </div>
+          ) : (
+            <div className="sidebar-card">
+              <h3>About the Employer</h3>
+              <div className="verified-employer-info">
+                <div className="verified-icon">
+                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                    <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                  </svg>
+                </div>
+                <p className="verified-text">Verified Employer</p>
+                <p className="verified-note">
+                  This employer has been verified by Nextonnect. Full company details will be shared after your application is accepted.
+                </p>
               </div>
-            </Link>
-            <Link to={`/profile/${job.employerId}`} className="btn btn-secondary btn-sm btn-block">
-              View Company Profile
-            </Link>
-          </div>
+            </div>
+          )}
         </aside>
       </div>
     </div>
