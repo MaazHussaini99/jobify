@@ -10,6 +10,13 @@ import './Messaging.css';
 
 const client = generateClient();
 
+// Admin email domain for Nextonnect support
+const ADMIN_EMAIL_DOMAIN = '@nextonnect.com';
+
+const isAdminUser = (email: string): boolean => {
+  return email.toLowerCase().endsWith(ADMIN_EMAIL_DOMAIN);
+};
+
 const NewConversation: React.FC = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -48,18 +55,20 @@ const NewConversation: React.FC = () => {
           setIsLoading(false);
         }
       } else {
-        // Fetch all users for selection
+        // Fetch all users for selection - only show admin accounts
         try {
           const response: any = await client.graphql({
             query: listProfessionals,
-            variables: { limit: 50 },
+            variables: { limit: 100 },
             authMode: 'userPool'
           });
           const users = response.data?.listUserProfiles?.items || [];
-          // Filter out current user
-          const filteredUsers = users.filter((u: UserProfile) => u.id !== profile?.id);
-          setAllUsers(filteredUsers);
-          setSearchResults(filteredUsers);
+          // Filter to only show admin users (@nextonnect.com) and exclude current user
+          const adminUsers = users.filter((u: UserProfile) =>
+            u.id !== profile?.id && isAdminUser(u.email)
+          );
+          setAllUsers(adminUsers);
+          setSearchResults(adminUsers);
         } catch (err: any) {
           console.error('Failed to load users:', err);
         } finally {
@@ -98,6 +107,12 @@ const NewConversation: React.FC = () => {
     e.preventDefault();
 
     if (!message.trim() || !profile || !targetUser) return;
+
+    // Verify target user is an admin (unless current user is admin)
+    if (!isAdminUser(profile.email) && !isAdminUser(targetUser.email)) {
+      setError('You can only send messages to Nextonnect support team.');
+      return;
+    }
 
     try {
       setIsSending(true);
@@ -205,6 +220,7 @@ const NewConversation: React.FC = () => {
               <Loading message="Searching..." />
             ) : searchResults.length > 0 ? (
               <div className="user-list">
+                <p className="support-notice">Contact our support team for assistance:</p>
                 {searchResults.map((user) => (
                   <div
                     key={user.id}
@@ -221,18 +237,16 @@ const NewConversation: React.FC = () => {
                     <div className="user-info">
                       <p className="user-name">{user.firstName} {user.lastName}</p>
                       {user.headline && <p className="user-headline">{user.headline}</p>}
-                      {user.companyName && <p className="user-company">{user.companyName}</p>}
+                      <p className="user-company">Nextonnect Support</p>
                     </div>
-                    <span className="user-type-badge">{user.userType}</span>
+                    <span className="user-type-badge admin">Support</span>
                   </div>
                 ))}
               </div>
             ) : (
               <div className="no-results">
-                <p>No users found. {allUsers.length === 0 && 'Be the first to invite others to join!'}</p>
-                <Link to="/professionals" className="btn btn-secondary">
-                  Browse Professionals
-                </Link>
+                <p>No support team members available at the moment.</p>
+                <p>Please try again later or email admin@nextonnect.com directly.</p>
               </div>
             )}
           </div>

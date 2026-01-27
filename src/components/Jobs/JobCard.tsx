@@ -26,6 +26,9 @@ const JobCard: React.FC<JobCardProps> = ({
   showApplyButton = true
 }) => {
   const { isAuthenticated, profile } = useAuth();
+
+  // Hide company info for all users except employers viewing their own jobs
+  const showCompanyInfo = profile?.userType === 'EMPLOYER' && job.employerId === profile?.id;
   const [saved, setSaved] = useState(isSaved);
   const [saving, setSaving] = useState(false);
 
@@ -118,21 +121,38 @@ const JobCard: React.FC<JobCardProps> = ({
       <Link to={`/jobs/${job.id}`} className="job-card-link">
         <div className="job-card-header">
           <div className="employer-info">
-            {job.employer?.profilePicture ? (
-              <img src={job.employer.profilePicture} alt="" className="employer-avatar" />
-            ) : (
-              <div className="employer-avatar placeholder">
-                {job.employer?.companyName?.[0] || 'C'}
-              </div>
-            )}
-            <div>
-              <p className="employer-name">{job.employer?.companyName || 'Company'}</p>
-              {job.employer?.averageRating && job.employer.averageRating > 0 && (
-                <div className="employer-rating">
-                  <StarRating rating={job.employer.averageRating} readonly size="small" />
+            {showCompanyInfo ? (
+              <>
+                {job.employer?.profilePicture ? (
+                  <img src={job.employer.profilePicture} alt="" className="employer-avatar" />
+                ) : (
+                  <div className="employer-avatar placeholder">
+                    {job.employer?.companyName?.[0] || 'C'}
+                  </div>
+                )}
+                <div>
+                  <p className="employer-name">{job.employer?.companyName || 'Company'}</p>
+                  {job.employer?.averageRating && job.employer.averageRating > 0 && (
+                    <div className="employer-rating">
+                      <StarRating rating={job.employer.averageRating} readonly size="small" />
+                    </div>
+                  )}
                 </div>
-              )}
-            </div>
+              </>
+            ) : (
+              <>
+                <div className="employer-avatar placeholder">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+                    <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+                  </svg>
+                </div>
+                <div>
+                  <p className="employer-name">Verified Employer</p>
+                  <p className="employer-note">via Nextonnect</p>
+                </div>
+              </>
+            )}
           </div>
           {isAuthenticated && profile?.userType === 'PROFESSIONAL' && (
             <button

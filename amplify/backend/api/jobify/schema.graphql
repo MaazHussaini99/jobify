@@ -495,6 +495,53 @@ type ParsedResume @aws_cognito_user_pools {
   parseError: String
 }
 
+# Scheduled Meetings
+type Meeting @model @auth(rules: [
+  { allow: owner },
+  { allow: private, operations: [read, update] }
+]) {
+  id: ID!
+  organizerId: ID! @index(name: "byOrganizer")
+  organizer: UserProfile @belongsTo(fields: ["organizerId"])
+
+  # Participants
+  professionalId: ID! @index(name: "byProfessional")
+  professional: UserProfile @belongsTo(fields: ["professionalId"])
+  adminEmail: String! # Always admin@nextonnect.com
+
+  # Related Job (optional)
+  jobId: ID @index(name: "byJob")
+  job: JobPosting @belongsTo(fields: ["jobId"])
+
+  # Meeting Details
+  title: String!
+  description: String
+  scheduledDate: AWSDateTime!
+  duration: Int! # Duration in minutes
+  timezone: String
+  meetingLink: String
+
+  # Status
+  status: MeetingStatus! @default(value: "PENDING")
+
+  # Notes
+  organizerNotes: String
+  professionalNotes: String
+  adminNotes: String
+
+  # Timestamps
+  createdAt: AWSDateTime!
+  updatedAt: AWSDateTime!
+}
+
+enum MeetingStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+  COMPLETED
+  RESCHEDULED
+}
+
 # Custom Mutation for AI Resume Parsing using Bedrock
 type Mutation {
   parseResume(content: String!, fileType: String): ParsedResume @function(name: "resumeParser-${env}") @auth(rules: [{ allow: private }])

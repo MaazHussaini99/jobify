@@ -10,6 +10,54 @@ import './Profile.css';
 
 const client = generateClient();
 
+// Calculate total years of experience from work history
+const calculateTotalExperience = (experience: any[] | undefined): number => {
+  if (!experience || experience.length === 0) return 0;
+
+  let totalMonths = 0;
+  const now = new Date();
+
+  experience.forEach((exp) => {
+    if (!exp.startDate) return;
+
+    const startDate = new Date(exp.startDate);
+    const endDate = exp.current || !exp.endDate ? now : new Date(exp.endDate);
+
+    const months = (endDate.getFullYear() - startDate.getFullYear()) * 12 +
+      (endDate.getMonth() - startDate.getMonth());
+    totalMonths += Math.max(0, months);
+  });
+
+  return Math.round(totalMonths / 12 * 10) / 10; // Round to 1 decimal place
+};
+
+// Format availability start time
+const formatAvailabilityTime = (availability: any): string => {
+  if (!availability) return 'Contact for availability';
+
+  if (availability.startDate) {
+    const startDate = new Date(availability.startDate);
+    const now = new Date();
+    const hoursUntilStart = (startDate.getTime() - now.getTime()) / (1000 * 60 * 60);
+
+    if (hoursUntilStart <= 0) return 'Available immediately';
+    if (hoursUntilStart <= 48) return 'Available within 48 hours';
+    if (hoursUntilStart <= 72) return 'Available within 72 hours';
+    return `Available from ${startDate.toLocaleDateString()}`;
+  }
+
+  switch (availability.status) {
+    case 'AVAILABLE':
+      return 'Available within 48 hours';
+    case 'PARTIALLY_AVAILABLE':
+      return 'Available within 72 hours';
+    case 'OPEN_TO_OFFERS':
+      return 'Open to offers - Contact for availability';
+    default:
+      return 'Currently unavailable';
+  }
+};
+
 const ProfileView: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const { profile: currentUserProfile, isAuthenticated } = useAuth();
@@ -69,6 +117,8 @@ const ProfileView: React.FC = () => {
   }
 
   const fullName = `${profile.firstName} ${profile.lastName}`;
+  const totalYearsExperience = calculateTotalExperience(profile.experience);
+  const availabilityText = formatAvailabilityTime(profile.availability);
 
   return (
     <div className="profile-view">
@@ -109,6 +159,15 @@ const ProfileView: React.FC = () => {
                   {profile.location}
                 </span>
               )}
+              {profile.userType === 'PROFESSIONAL' && totalYearsExperience > 0 && (
+                <span className="meta-item">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+                    <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+                  </svg>
+                  {totalYearsExperience} {totalYearsExperience === 1 ? 'year' : 'years'} experience
+                </span>
+              )}
               {(profile.averageRating ?? 0) > 0 && (
                 <span className="meta-item">
                   <StarRating rating={profile.averageRating ?? 0} readonly size="small" />
@@ -121,6 +180,15 @@ const ProfileView: React.FC = () => {
                 </span>
               )}
             </div>
+            {profile.userType === 'PROFESSIONAL' && (
+              <div className="availability-badge-inline">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <polyline points="12 6 12 12 16 14"></polyline>
+                </svg>
+                {availabilityText}
+              </div>
+            )}
           </div>
           <div className="profile-header-actions">
             {isOwnProfile ? (
@@ -129,12 +197,15 @@ const ProfileView: React.FC = () => {
               </Link>
             ) : (
               <>
-                <Link to={`/messages/new?userId=${profile.id}`} className="btn btn-primary">
-                  Message
-                </Link>
-                {profile.userType === 'PROFESSIONAL' && (
-                  <button className="btn btn-secondary">Invite to Job</button>
+                {/* Employers can schedule meetings with professionals */}
+                {currentUserProfile?.userType === 'EMPLOYER' && profile.userType === 'PROFESSIONAL' && (
+                  <Link to={`/meetings/schedule/${profile.id}`} className="btn btn-primary">
+                    Schedule Meeting
+                  </Link>
                 )}
+                <Link to="/messages/new" className="btn btn-secondary">
+                  Contact Support
+                </Link>
               </>
             )}
           </div>
@@ -320,42 +391,7 @@ const ProfileView: React.FC = () => {
             </div>
           </div>
 
-          {/* Contact Links */}
-          {(profile.website || profile.linkedIn || profile.github) && (
-            <div className="sidebar-card">
-              <h3>Links</h3>
-              <div className="links-list">
-                {profile.website && (
-                  <a href={profile.website} target="_blank" rel="noopener noreferrer" className="link-item">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <circle cx="12" cy="12" r="10"></circle>
-                      <line x1="2" y1="12" x2="22" y2="12"></line>
-                      <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
-                    </svg>
-                    Website
-                  </a>
-                )}
-                {profile.linkedIn && (
-                  <a href={profile.linkedIn} target="_blank" rel="noopener noreferrer" className="link-item">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path>
-                      <rect x="2" y="9" width="4" height="12"></rect>
-                      <circle cx="4" cy="4" r="2"></circle>
-                    </svg>
-                    LinkedIn
-                  </a>
-                )}
-                {profile.github && (
-                  <a href={profile.github} target="_blank" rel="noopener noreferrer" className="link-item">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
-                    </svg>
-                    GitHub
-                  </a>
-                )}
-              </div>
-            </div>
-          )}
+          {/* Contact info hidden - users must contact through Nextonnect support */}
 
           {/* Member Since */}
           <div className="sidebar-card">

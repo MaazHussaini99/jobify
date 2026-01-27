@@ -412,6 +412,55 @@ export const incrementJobViewCount = /* GraphQL */ `
   }
 `;
 
+// Meeting Mutations
+export const createMeeting = /* GraphQL */ `
+  mutation CreateMeeting($input: CreateMeetingInput!) {
+    createMeeting(input: $input) {
+      id
+      organizerId
+      professionalId
+      adminEmail
+      jobId
+      title
+      description
+      scheduledDate
+      duration
+      timezone
+      meetingLink
+      status
+      organizerNotes
+      createdAt
+    }
+  }
+`;
+
+export const updateMeeting = /* GraphQL */ `
+  mutation UpdateMeeting($input: UpdateMeetingInput!) {
+    updateMeeting(input: $input) {
+      id
+      title
+      description
+      scheduledDate
+      duration
+      timezone
+      meetingLink
+      status
+      organizerNotes
+      professionalNotes
+      adminNotes
+      updatedAt
+    }
+  }
+`;
+
+export const deleteMeeting = /* GraphQL */ `
+  mutation DeleteMeeting($input: DeleteMeetingInput!) {
+    deleteMeeting(input: $input) {
+      id
+    }
+  }
+`;
+
 // AI Resume Parsing using AWS Bedrock
 export const parseResume = /* GraphQL */ `
   mutation ParseResume($content: String!, $fileType: String) {
