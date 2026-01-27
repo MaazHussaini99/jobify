@@ -55,6 +55,8 @@ type UserProfile @model @auth(rules: [
   reviewsReceived: [Review] @hasMany(indexName: "byReviewee", fields: ["id"])
   conversationsAsUser1: [Conversation] @hasMany(indexName: "byUser1", fields: ["id"])
   conversationsAsUser2: [Conversation] @hasMany(indexName: "byUser2", fields: ["id"])
+  meetingsOrganized: [Meeting] @hasMany(indexName: "byOrganizer", fields: ["id"])
+  meetingsAsParticipant: [Meeting] @hasMany(indexName: "byProfessional", fields: ["id"])
 }
 
 type Skill {
@@ -176,6 +178,7 @@ type JobPosting @model @auth(rules: [
   reviews: [Review] @hasMany(indexName: "byJob", fields: ["id"])
   conversations: [Conversation] @hasMany(indexName: "byJob", fields: ["id"])
   savedBy: [SavedJob] @hasMany(indexName: "byJob", fields: ["id"])
+  meetings: [Meeting] @hasMany(indexName: "byJob", fields: ["id"])
 }
 
 enum JobType {
