@@ -1,0 +1,12 @@
+{
+  "name": "admin-user-manager",
+  "version": "1.0.0",
+  "description": "Lambda function for admin user management",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "@aws-sdk/client-cognito-identity-provider": "^3.400.0"
+  }
+}
