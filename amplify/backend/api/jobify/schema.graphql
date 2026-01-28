@@ -103,6 +103,14 @@ type Availability {
   startDate: String
   timezone: String
   preferredSchedule: String
+  availableWithin: AvailableWithin # 48 or 72 hours specific selection
+}
+
+enum AvailableWithin {
+  IMMEDIATELY
+  HOURS_48
+  HOURS_72
+  CUSTOM
 }
 
 enum UserType {

@@ -4,6 +4,7 @@
 export type UserType = 'PROFESSIONAL' | 'EMPLOYER';
 export type SkillLevel = 'BEGINNER' | 'INTERMEDIATE' | 'ADVANCED' | 'EXPERT';
 export type AvailabilityStatus = 'AVAILABLE' | 'PARTIALLY_AVAILABLE' | 'NOT_AVAILABLE' | 'OPEN_TO_OFFERS';
+export type AvailableWithin = 'IMMEDIATELY' | 'HOURS_48' | 'HOURS_72' | 'CUSTOM';
 export type JobType = 'FULL_TIME' | 'PART_TIME' | 'CONTRACT' | 'FREELANCE' | 'INTERNSHIP';
 export type JobDuration = 'LESS_THAN_WEEK' | 'ONE_TO_FOUR_WEEKS' | 'ONE_TO_THREE_MONTHS' | 'THREE_TO_SIX_MONTHS' | 'MORE_THAN_SIX_MONTHS' | 'ONGOING';
 export type ExperienceLevel = 'ENTRY' | 'JUNIOR' | 'MID' | 'SENIOR' | 'LEAD' | 'EXECUTIVE';
@@ -61,6 +62,7 @@ export interface Availability {
   startDate?: string;
   timezone?: string;
   preferredSchedule?: string;
+  availableWithin?: AvailableWithin;
 }
 
 export interface Attachment {

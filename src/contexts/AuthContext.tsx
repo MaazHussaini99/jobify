@@ -6,6 +6,7 @@ import {
   confirmSignUp,
   resetPassword,
   confirmResetPassword,
+  confirmSignIn,
   getCurrentUser,
   fetchAuthSession
 } from 'aws-amplify/auth';
@@ -22,9 +23,12 @@ interface AuthContextType {
   isAuthenticated: boolean;
   isLoading: boolean;
   error: string | null;
+  newPasswordRequired: boolean;
+  pendingUser: { email: string } | null;
   signUpUser: (email: string, password: string, firstName: string, lastName: string, userType: UserType) => Promise<void>;
   confirmSignUpUser: (email: string, code: string) => Promise<void>;
-  signInUser: (email: string, password: string) => Promise<void>;
+  signInUser: (email: string, password: string) => Promise<{ challengeName?: string }>;
+  completeNewPassword: (newPassword: string) => Promise<void>;
   signOutUser: () => Promise<void>;
   resetPasswordUser: (email: string) => Promise<void>;
   confirmResetPasswordUser: (email: string, code: string, newPassword: string) => Promise<void>;
@@ -44,6 +48,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [newPasswordRequired, setNewPasswordRequired] = useState(false);
+  const [pendingUser, setPendingUser] = useState<{ email: string } | null>(null);
 
   const fetchUserProfile = useCallback(async (userId: string) => {
     try {
@@ -143,17 +149,24 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
-  const signInUser = async (email: string, password: string) => {
+  const signInUser = async (email: string, password: string): Promise<{ challengeName?: string }> => {
     try {
       setError(null);
       setIsLoading(true);
 
-      const { isSignedIn } = await signIn({
+      const result = await signIn({
         username: email,
         password
       });
 
-      if (isSignedIn) {
+      // Check if new password is required (admin-created user with temp password)
+      if (result.nextStep?.signInStep === 'CONFIRM_SIGN_IN_WITH_NEW_PASSWORD_REQUIRED') {
+        setNewPasswordRequired(true);
+        setPendingUser({ email });
+        return { challengeName: 'NEW_PASSWORD_REQUIRED' };
+      }
+
+      if (result.isSignedIn) {
         // Check if there's a pending profile to create (new user after confirmation)
         const pendingProfile = sessionStorage.getItem('pendingProfile');
         if (pendingProfile) {
@@ -179,10 +192,36 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           }
         }
 
+        setNewPasswordRequired(false);
+        setPendingUser(null);
+        await checkAuthState();
+      }
+
+      return {};
+    } catch (err: any) {
+      setError(err.message || 'Sign in failed');
+      throw err;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const completeNewPassword = async (newPassword: string) => {
+    try {
+      setError(null);
+      setIsLoading(true);
+
+      const result = await confirmSignIn({
+        challengeResponse: newPassword
+      });
+
+      if (result.isSignedIn) {
+        setNewPasswordRequired(false);
+        setPendingUser(null);
         await checkAuthState();
       }
     } catch (err: any) {
-      setError(err.message || 'Sign in failed');
+      setError(err.message || 'Failed to set new password');
       throw err;
     } finally {
       setIsLoading(false);
@@ -254,9 +293,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     isAuthenticated,
     isLoading,
     error,
+    newPasswordRequired,
+    pendingUser,
     signUpUser,
     confirmSignUpUser,
     signInUser,
+    completeNewPassword,
     signOutUser,
     resetPasswordUser,
     confirmResetPasswordUser,

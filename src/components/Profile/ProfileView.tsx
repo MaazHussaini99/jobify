@@ -35,6 +35,21 @@ const calculateTotalExperience = (experience: any[] | undefined): number => {
 const formatAvailabilityTime = (availability: any): string => {
   if (!availability) return 'Contact for availability';
 
+  // Check for explicit availableWithin selection first
+  if (availability.availableWithin) {
+    switch (availability.availableWithin) {
+      case 'IMMEDIATELY':
+        return 'Available immediately';
+      case 'HOURS_48':
+        return 'Available within 48 hours';
+      case 'HOURS_72':
+        return 'Available within 72 hours';
+      case 'CUSTOM':
+        // Fall through to startDate check
+        break;
+    }
+  }
+
   if (availability.startDate) {
     const startDate = new Date(availability.startDate);
     const now = new Date();
@@ -56,6 +71,14 @@ const formatAvailabilityTime = (availability: any): string => {
     default:
       return 'Currently unavailable';
   }
+};
+
+// Admin email domain
+const ADMIN_EMAIL_DOMAIN = '@nextonnect.com';
+
+// Check if user is admin
+const isAdminUser = (email: string | undefined): boolean => {
+  return email?.toLowerCase().endsWith(ADMIN_EMAIL_DOMAIN) || false;
 };
 
 const ProfileView: React.FC = () => {
@@ -116,9 +139,35 @@ const ProfileView: React.FC = () => {
     );
   }
 
-  const fullName = `${profile.firstName} ${profile.lastName}`;
   const totalYearsExperience = calculateTotalExperience(profile.experience);
   const availabilityText = formatAvailabilityTime(profile.availability);
+
+  // Privacy rules:
+  // - Admin users (@nextonnect.com) can see everything
+  // - Employers cannot see professional names/contact info
+  // - Professionals cannot see employer/company names/contact info
+  // - Users can always see their own profile
+  const isCurrentUserAdmin = isAdminUser(currentUserProfile?.email);
+
+  // Determine if we should show the real identity
+  const shouldShowIdentity = isOwnProfile || isCurrentUserAdmin || (
+    // If viewing professional and current user is NOT employer
+    (profile.userType === 'PROFESSIONAL' && currentUserProfile?.userType !== 'EMPLOYER') ||
+    // If viewing employer and current user is NOT professional
+    (profile.userType === 'EMPLOYER' && currentUserProfile?.userType !== 'PROFESSIONAL')
+  );
+
+  // Masked name and company for privacy
+  const displayName = shouldShowIdentity
+    ? `${profile.firstName} ${profile.lastName}`
+    : profile.userType === 'PROFESSIONAL'
+      ? `Professional #${profile.id.slice(-6).toUpperCase()}`
+      : `Employer #${profile.id.slice(-6).toUpperCase()}`;
+
+  const displayCompanyName = shouldShowIdentity ? profile.companyName : null;
+  const displayInitials = shouldShowIdentity
+    ? `${profile.firstName[0]}${profile.lastName[0]}`
+    : profile.userType === 'PROFESSIONAL' ? 'P' : 'E';
 
   return (
     <div className="profile-view">
@@ -133,19 +182,28 @@ const ProfileView: React.FC = () => {
         </div>
         <div className="profile-header-content">
           <div className="profile-avatar">
-            {profile.profilePicture ? (
-              <img src={profile.profilePicture} alt={fullName} />
+            {shouldShowIdentity && profile.profilePicture ? (
+              <img src={profile.profilePicture} alt={displayName} />
             ) : (
               <div className="avatar-placeholder">
-                {profile.firstName[0]}{profile.lastName[0]}
+                {displayInitials}
               </div>
             )}
           </div>
           <div className="profile-header-info">
             <div className="profile-name-section">
-              <h1>{fullName}</h1>
-              {profile.userType === 'EMPLOYER' && profile.companyName && (
-                <span className="company-badge">{profile.companyName}</span>
+              <h1>{displayName}</h1>
+              {profile.userType === 'EMPLOYER' && displayCompanyName && (
+                <span className="company-badge">{displayCompanyName}</span>
+              )}
+              {!shouldShowIdentity && (
+                <span className="privacy-badge">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                  </svg>
+                  Identity protected until match
+                </span>
               )}
             </div>
             {profile.headline && <p className="profile-headline">{profile.headline}</p>}

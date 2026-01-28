@@ -8,7 +8,10 @@ import amplifyConfig from './amplifyconfiguration';
 import { Header, Footer } from './components/Layout';
 
 // Auth Components
-import { SignUp, SignIn, ConfirmSignUp, ForgotPassword, ResetPassword } from './components/Auth';
+import { SignUp, SignIn, ConfirmSignUp, ForgotPassword, ResetPassword, NewPasswordRequired } from './components/Auth';
+
+// Admin Components
+import { AdminPanel } from './components/Admin';
 
 // Profile Components
 import { ProfileView, ProfileEdit } from './components/Profile';
@@ -95,19 +98,38 @@ const AppLayout: React.FC<{ children: React.ReactNode; showFooter?: boolean }> =
   );
 };
 
+// Home Route - redirects to dashboard if authenticated
+const HomeRoute: React.FC = () => {
+  const { isAuthenticated, isLoading } = useAuth();
+
+  if (isLoading) {
+    return (
+      <div className="loading-screen">
+        <div className="loading-spinner">
+          <div className="spinner"></div>
+        </div>
+        <p>Loading...</p>
+      </div>
+    );
+  }
+
+  if (isAuthenticated) {
+    return <Navigate to="/dashboard" replace />;
+  }
+
+  return (
+    <AppLayout>
+      <HomePage />
+    </AppLayout>
+  );
+};
+
 // App Routes
 const AppRoutes: React.FC = () => {
   return (
     <Routes>
-      {/* Public Routes */}
-      <Route
-        path="/"
-        element={
-          <AppLayout>
-            <HomePage />
-          </AppLayout>
-        }
-      />
+      {/* Home - redirects to dashboard if authenticated */}
+      <Route path="/" element={<HomeRoute />} />
 
       {/* Auth Routes */}
       <Route
@@ -149,6 +171,10 @@ const AppRoutes: React.FC = () => {
             <ResetPassword />
           </PublicRoute>
         }
+      />
+      <Route
+        path="/new-password"
+        element={<NewPasswordRequired />}
       />
 
       {/* Dashboard */}
@@ -250,6 +276,18 @@ const AppRoutes: React.FC = () => {
           <ProtectedRoute>
             <AppLayout>
               <ScheduleMeeting />
+            </AppLayout>
+          </ProtectedRoute>
+        }
+      />
+
+      {/* Admin */}
+      <Route
+        path="/admin"
+        element={
+          <ProtectedRoute>
+            <AppLayout>
+              <AdminPanel />
             </AppLayout>
           </ProtectedRoute>
         }
