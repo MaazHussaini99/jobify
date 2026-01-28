@@ -1,6 +1,7 @@
 const { CognitoIdentityProviderClient, AdminCreateUserCommand, AdminSetUserPasswordCommand } = require('@aws-sdk/client-cognito-identity-provider');
 
 const ADMIN_EMAIL_DOMAIN = '@nextonnect.com';
+const VERSION = '2.0.0'; // Version to verify deployment
 
 // Check if the caller is an admin
 const isAdminUser = (email) => {
@@ -9,48 +10,66 @@ const isAdminUser = (email) => {
 
 // Extract caller email from AppSync event identity
 const getCallerEmail = (event) => {
-  // Log the full identity object for debugging
+  // Log the full event and identity for debugging
+  console.log('=== ADMIN USER MANAGER v' + VERSION + ' ===');
+  console.log('Full event:', JSON.stringify(event, null, 2));
   console.log('Identity object:', JSON.stringify(event.identity, null, 2));
+
+  const identity = event.identity || {};
 
   // Try multiple paths where email might be located
   // Path 1: Direct claims.email
-  if (event.identity?.claims?.email) {
-    return event.identity.claims.email;
+  if (identity.claims?.email) {
+    console.log('Found email at claims.email:', identity.claims.email);
+    return identity.claims.email;
   }
 
   // Path 2: Username (if email is used as username)
-  if (event.identity?.username && event.identity.username.includes('@')) {
-    return event.identity.username;
+  if (identity.username && identity.username.includes('@')) {
+    console.log('Found email at username:', identity.username);
+    return identity.username;
   }
 
   // Path 3: Claims with cognito:username
-  if (event.identity?.claims?.['cognito:username']) {
-    const username = event.identity.claims['cognito:username'];
+  if (identity.claims?.['cognito:username']) {
+    const username = identity.claims['cognito:username'];
     if (username.includes('@')) {
+      console.log('Found email at cognito:username:', username);
       return username;
     }
   }
 
-  // Path 4: Check if claims is a string (JWT token) that needs parsing
-  if (typeof event.identity?.claims === 'string') {
-    try {
-      const parsed = JSON.parse(event.identity.claims);
-      if (parsed.email) return parsed.email;
-    } catch (e) {
-      // Not JSON, ignore
-    }
+  // Path 4: Check sub and try to get from username (AppSync sometimes uses sub)
+  if (identity.sub) {
+    console.log('Found sub:', identity.sub);
+    // Sub is usually a UUID, but let's check if username is available elsewhere
   }
 
   // Path 5: Direct identity.email
-  if (event.identity?.email) {
-    return event.identity.email;
+  if (identity.email) {
+    console.log('Found email at identity.email:', identity.email);
+    return identity.email;
   }
 
+  // Path 6: Check if claims is a string (JWT token) that needs parsing
+  if (typeof identity.claims === 'string') {
+    try {
+      const parsed = JSON.parse(identity.claims);
+      if (parsed.email) {
+        console.log('Found email in parsed claims:', parsed.email);
+        return parsed.email;
+      }
+    } catch (e) {
+      console.log('Could not parse claims string');
+    }
+  }
+
+  console.log('Could not extract email from identity');
   return null;
 };
 
 exports.handler = async (event) => {
-  console.log('Event received:', JSON.stringify(event, null, 2));
+  console.log('=== ADMIN USER MANAGER HANDLER v' + VERSION + ' ===');
 
   try {
     // Get the input from the GraphQL mutation
@@ -82,7 +101,7 @@ exports.handler = async (event) => {
     if (!callerEmail) {
       return {
         success: false,
-        message: 'Unable to determine caller identity. Please ensure you are logged in.',
+        message: `[v${VERSION}] Unable to determine caller identity. Please ensure you are logged in. Check CloudWatch logs for details.`,
         userId: null
       };
     }
@@ -90,7 +109,7 @@ exports.handler = async (event) => {
     if (!isAdminUser(callerEmail)) {
       return {
         success: false,
-        message: `Unauthorized: Only admin users (@nextonnect.com) can create new users. Your email: ${callerEmail}`,
+        message: `[v${VERSION}] Unauthorized: Only admin users (@nextonnect.com) can create new users. Your email: ${callerEmail}`,
         userId: null
       };
     }
