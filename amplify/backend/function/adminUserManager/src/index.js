@@ -7,6 +7,48 @@ const isAdminUser = (email) => {
   return email && email.toLowerCase().endsWith(ADMIN_EMAIL_DOMAIN);
 };
 
+// Extract caller email from AppSync event identity
+const getCallerEmail = (event) => {
+  // Log the full identity object for debugging
+  console.log('Identity object:', JSON.stringify(event.identity, null, 2));
+
+  // Try multiple paths where email might be located
+  // Path 1: Direct claims.email
+  if (event.identity?.claims?.email) {
+    return event.identity.claims.email;
+  }
+
+  // Path 2: Username (if email is used as username)
+  if (event.identity?.username && event.identity.username.includes('@')) {
+    return event.identity.username;
+  }
+
+  // Path 3: Claims with cognito:username
+  if (event.identity?.claims?.['cognito:username']) {
+    const username = event.identity.claims['cognito:username'];
+    if (username.includes('@')) {
+      return username;
+    }
+  }
+
+  // Path 4: Check if claims is a string (JWT token) that needs parsing
+  if (typeof event.identity?.claims === 'string') {
+    try {
+      const parsed = JSON.parse(event.identity.claims);
+      if (parsed.email) return parsed.email;
+    } catch (e) {
+      // Not JSON, ignore
+    }
+  }
+
+  // Path 5: Direct identity.email
+  if (event.identity?.email) {
+    return event.identity.email;
+  }
+
+  return null;
+};
+
 exports.handler = async (event) => {
   console.log('Event received:', JSON.stringify(event, null, 2));
 
@@ -34,13 +76,21 @@ exports.handler = async (event) => {
     }
 
     // Check if the caller is an admin (from the identity context)
-    const callerEmail = event.identity?.claims?.email;
-    console.log('Caller email:', callerEmail);
+    const callerEmail = getCallerEmail(event);
+    console.log('Extracted caller email:', callerEmail);
+
+    if (!callerEmail) {
+      return {
+        success: false,
+        message: 'Unable to determine caller identity. Please ensure you are logged in.',
+        userId: null
+      };
+    }
 
     if (!isAdminUser(callerEmail)) {
       return {
         success: false,
-        message: 'Unauthorized: Only admin users can create new users',
+        message: `Unauthorized: Only admin users (@nextonnect.com) can create new users. Your email: ${callerEmail}`,
         userId: null
       };
     }
