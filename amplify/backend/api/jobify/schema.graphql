@@ -553,7 +553,23 @@ enum MeetingStatus {
   RESCHEDULED
 }
 
-# Custom Mutation for AI Resume Parsing using Bedrock
+# Admin User Creation Types
+input AdminCreateUserInput {
+  email: String!
+  firstName: String!
+  lastName: String!
+  userType: UserType!
+  temporaryPassword: String!
+}
+
+type AdminCreateUserResponse @aws_cognito_user_pools {
+  success: Boolean!
+  message: String
+  userId: String
+}
+
+# Custom Mutations
 type Mutation {
   parseResume(content: String!, fileType: String): ParsedResume @function(name: "resumeParser-${env}") @auth(rules: [{ allow: private }])
+  adminCreateUser(input: AdminCreateUserInput!): AdminCreateUserResponse @function(name: "adminUserManager-${env}") @auth(rules: [{ allow: private }])
 }

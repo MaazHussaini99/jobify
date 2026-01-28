@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "auth": [
+      {
+        "resourceName": "jobify18018b92",
+        "attributes": ["UserPoolId"]
+      }
+    ]
+  }
+}
