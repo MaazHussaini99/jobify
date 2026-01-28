@@ -129,6 +129,22 @@
   font-weight: 500;
 }
 
+.privacy-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  background: #fef3c7;
+  color: #d97706;
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.privacy-badge svg {
+  flex-shrink: 0;
+}
+
 .profile-headline {
   color: #666;
   margin: 0.5rem 0;

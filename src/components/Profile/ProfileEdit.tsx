@@ -13,6 +13,12 @@ const client = generateClient();
 const SKILL_LEVELS: SkillLevel[] = ['BEGINNER', 'INTERMEDIATE', 'ADVANCED', 'EXPERT'];
 const AVAILABILITY_STATUSES: AvailabilityStatus[] = ['AVAILABLE', 'PARTIALLY_AVAILABLE', 'NOT_AVAILABLE', 'OPEN_TO_OFFERS'];
 const JOB_TYPES: JobType[] = ['FULL_TIME', 'PART_TIME', 'CONTRACT', 'FREELANCE', 'INTERNSHIP'];
+const AVAILABLE_WITHIN_OPTIONS = [
+  { value: 'IMMEDIATELY', label: 'Immediately' },
+  { value: 'HOURS_48', label: 'Within 48 hours' },
+  { value: 'HOURS_72', label: 'Within 72 hours' },
+  { value: 'CUSTOM', label: 'Custom (specify date)' }
+];
 
 const ProfileEdit: React.FC = () => {
   const navigate = useNavigate();
@@ -671,6 +677,30 @@ const ProfileEdit: React.FC = () => {
                 </select>
               </div>
               <div className="form-group">
+                <label htmlFor="availableWithin">Available to Start</label>
+                <select
+                  id="availableWithin"
+                  value={availability.availableWithin || ''}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    setAvailability(prev => ({
+                      ...prev,
+                      availableWithin: value ? value as 'IMMEDIATELY' | 'HOURS_48' | 'HOURS_72' | 'CUSTOM' : undefined
+                    }));
+                  }}
+                >
+                  <option value="">Select availability</option>
+                  {AVAILABLE_WITHIN_OPTIONS.map(option => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            <div className="form-row">
+              <div className="form-group">
                 <label htmlFor="hoursPerWeek">Hours Per Week</label>
                 <input
                   type="number"
@@ -681,9 +711,6 @@ const ProfileEdit: React.FC = () => {
                   onChange={(e) => setAvailability(prev => ({ ...prev, hoursPerWeek: parseInt(e.target.value) || 0 }))}
                 />
               </div>
-            </div>
-
-            <div className="form-row">
               <div className="form-group">
                 <label htmlFor="hourlyRate">Hourly Rate (USD)</label>
                 <input

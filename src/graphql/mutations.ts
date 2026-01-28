@@ -80,6 +80,7 @@ export const updateUserProfile = /* GraphQL */ `
         startDate
         timezone
         preferredSchedule
+        availableWithin
       }
       hourlyRate
       preferredJobTypes

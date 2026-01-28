@@ -46,8 +46,14 @@ const SignIn: React.FC = () => {
     if (!validateForm()) return;
 
     try {
-      await signInUser(formData.email, formData.password);
-      navigate(from, { replace: true });
+      const result = await signInUser(formData.email, formData.password);
+
+      if (result.challengeName === 'NEW_PASSWORD_REQUIRED') {
+        // Redirect to new password page
+        navigate('/new-password', { replace: true });
+      } else {
+        navigate(from, { replace: true });
+      }
     } catch (err) {
       // Error is handled by AuthContext
     }
