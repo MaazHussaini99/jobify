@@ -4,6 +4,7 @@ import { generateClient } from 'aws-amplify/api';
 import { useAuth } from '../../contexts/AuthContext';
 import { UserProfile } from '../../types';
 import { getUserProfile, listReviewsByUser } from '../../graphql/queries';
+import { useStorageUrl } from '../../hooks/useStorageUrl';
 import StarRating from '../Common/StarRating';
 import SkillBadge from '../Common/SkillBadge';
 import './Profile.css';
@@ -90,6 +91,9 @@ const ProfileView: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
 
   const isOwnProfile = currentUserProfile?.id === id;
+
+  // Convert profile picture S3 key to URL
+  const profilePictureUrl = useStorageUrl(profile?.profilePicture);
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -182,8 +186,8 @@ const ProfileView: React.FC = () => {
         </div>
         <div className="profile-header-content">
           <div className="profile-avatar">
-            {shouldShowIdentity && profile.profilePicture ? (
-              <img src={profile.profilePicture} alt={displayName} />
+            {shouldShowIdentity && profilePictureUrl ? (
+              <img src={profilePictureUrl} alt={displayName} />
             ) : (
               <div className="avatar-placeholder">
                 {displayInitials}

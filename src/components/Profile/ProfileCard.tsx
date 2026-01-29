@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { UserProfile } from '../../types';
+import { useStorageUrl } from '../../hooks/useStorageUrl';
 import StarRating from '../Common/StarRating';
 import './Profile.css';
 
@@ -19,13 +20,14 @@ const ProfileCard: React.FC<ProfileCardProps> = ({
 }) => {
   const fullName = `${profile.firstName} ${profile.lastName}`;
   const topSkills = profile.skills?.slice(0, 5) || [];
+  const profilePictureUrl = useStorageUrl(profile.profilePicture);
 
   return (
     <div className="profile-card">
       <Link to={`/profile/${profile.id}`} className="profile-card-link">
         <div className="card-avatar">
-          {profile.profilePicture ? (
-            <img src={profile.profilePicture} alt={fullName} />
+          {profilePictureUrl ? (
+            <img src={profilePictureUrl} alt={fullName} />
           ) : (
             <div className="avatar-placeholder">
               {profile.firstName[0]}{profile.lastName[0]}

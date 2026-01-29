@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
+import { useStorageUrl } from '../../hooks/useStorageUrl';
 import './Layout.css';
 
 const Header: React.FC = () => {
@@ -8,6 +9,7 @@ const Header: React.FC = () => {
   const { isAuthenticated, profile, signOutUser } = useAuth();
   const [showDropdown, setShowDropdown] = useState(false);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
+  const profilePictureUrl = useStorageUrl(profile?.profilePicture);
 
   const handleSignOut = async () => {
     try {
@@ -47,8 +49,8 @@ const Header: React.FC = () => {
                 className="user-menu-trigger"
                 onClick={() => setShowDropdown(!showDropdown)}
               >
-                {profile?.profilePicture ? (
-                  <img src={profile.profilePicture} alt="" className="user-avatar" />
+                {profilePictureUrl ? (
+                  <img src={profilePictureUrl} alt="" className="user-avatar" />
                 ) : (
                   <div className="user-avatar placeholder">
                     {profile?.firstName?.[0]}{profile?.lastName?.[0]}
