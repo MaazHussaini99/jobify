@@ -1,7 +1,10 @@
 const { CognitoIdentityProviderClient, AdminCreateUserCommand, AdminGetUserCommand } = require('@aws-sdk/client-cognito-identity-provider');
+const { DynamoDBClient } = require('@aws-sdk/client-dynamodb');
+const { DynamoDBDocumentClient, PutCommand } = require('@aws-sdk/lib-dynamodb');
+const { v4: uuidv4 } = require('uuid');
 
 const ADMIN_EMAIL_DOMAIN = '@nextonnect.com';
-const VERSION = '3.0.0'; // Version to verify deployment
+const VERSION = '4.0.0'; // Version to verify deployment - adds UserProfile creation
 
 // Check if the caller is an admin
 const isAdminUser = (email) => {
@@ -69,6 +72,39 @@ const getCallerEmail = (event) => {
   return null;
 };
 
+// Create UserProfile in DynamoDB
+const createUserProfile = async (docClient, userId, email, firstName, lastName, userType) => {
+  const tableName = `UserProfile-${process.env.API_ID}-${process.env.ENV}`;
+  console.log('Creating UserProfile in table:', tableName);
+
+  const now = new Date().toISOString();
+  const profileId = uuidv4();
+
+  const item = {
+    id: profileId,
+    __typename: 'UserProfile',
+    userId: userId,
+    email: email,
+    firstName: firstName,
+    lastName: lastName,
+    userType: userType,
+    createdAt: now,
+    updatedAt: now,
+    owner: userId
+  };
+
+  console.log('UserProfile item:', JSON.stringify(item, null, 2));
+
+  const command = new PutCommand({
+    TableName: tableName,
+    Item: item
+  });
+
+  await docClient.send(command);
+  console.log('UserProfile created successfully with id:', profileId);
+  return profileId;
+};
+
 exports.handler = async (event) => {
   console.log('=== ADMIN USER MANAGER HANDLER v' + VERSION + ' ===');
 
@@ -98,12 +134,27 @@ exports.handler = async (event) => {
       region: process.env.REGION || 'us-east-1'
     });
 
+    // Create DynamoDB client
+    const dynamoClient = new DynamoDBClient({
+      region: process.env.REGION || 'us-east-1'
+    });
+    const docClient = DynamoDBDocumentClient.from(dynamoClient);
+
     const userPoolId = process.env.USER_POOL_ID;
+    const apiId = process.env.API_ID;
 
     if (!userPoolId) {
       return {
         success: false,
         message: `[v${VERSION}] Server configuration error: User Pool ID not configured`,
+        userId: null
+      };
+    }
+
+    if (!apiId) {
+      return {
+        success: false,
+        message: `[v${VERSION}] Server configuration error: API ID not configured`,
         userId: null
       };
     }
@@ -163,9 +214,28 @@ exports.handler = async (event) => {
 
     const userId = createUserResponse.User?.Username;
 
+    // Get the Cognito sub (unique user ID)
+    const subAttr = createUserResponse.User?.Attributes?.find(attr => attr.Name === 'sub');
+    const cognitoSub = subAttr?.Value || userId;
+    console.log('Cognito sub:', cognitoSub);
+
+    // Create UserProfile in DynamoDB
+    try {
+      const profileId = await createUserProfile(docClient, cognitoSub, email, firstName, lastName, userType);
+      console.log('UserProfile created with id:', profileId);
+    } catch (profileError) {
+      console.error('Error creating UserProfile:', profileError);
+      // User was created in Cognito but profile failed - return partial success
+      return {
+        success: true,
+        message: `[v${VERSION}] User ${email} created in Cognito but profile creation failed: ${profileError.message}. User may need to complete profile on first login.`,
+        userId: userId
+      };
+    }
+
     return {
       success: true,
-      message: `[v${VERSION}] User ${email} created successfully. They will be required to change their password on first login.`,
+      message: `[v${VERSION}] User ${email} created successfully with profile. They will be required to change their password on first login.`,
       userId: userId
     };
 
