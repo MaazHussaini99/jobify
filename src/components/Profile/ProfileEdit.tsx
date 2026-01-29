@@ -166,7 +166,8 @@ const ProfileEdit: React.FC = () => {
     if (!file) return;
 
     try {
-      const fileKey = `profiles/${profile?.id}/${uuid()}-${file.name}`;
+      // Use public/ prefix for profile pictures so they're accessible to all users
+      const fileKey = `public/profiles/${profile?.id}/${uuid()}-${file.name}`;
       await uploadData({
         path: fileKey,
         data: file,
