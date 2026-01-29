@@ -32,9 +32,12 @@ const Header: React.FC = () => {
           <Link to="/jobs" className="nav-link" onClick={() => setShowMobileMenu(false)}>
             Find Jobs
           </Link>
-          <Link to="/professionals" className="nav-link" onClick={() => setShowMobileMenu(false)}>
-            Find Professionals
-          </Link>
+          {/* Only show Find Professionals to employers and non-authenticated users */}
+          {(!isAuthenticated || profile?.userType === 'EMPLOYER') && (
+            <Link to="/professionals" className="nav-link" onClick={() => setShowMobileMenu(false)}>
+              Find Professionals
+            </Link>
+          )}
           {isAuthenticated && (
             <Link to="/messages" className="nav-link" onClick={() => setShowMobileMenu(false)}>
               Messages

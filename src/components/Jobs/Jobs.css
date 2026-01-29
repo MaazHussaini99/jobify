@@ -31,12 +31,48 @@
 .filter-toggle {
   display: none;
   margin-bottom: 1rem;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 .filters-panel {
   position: sticky;
   top: 1rem;
   height: fit-content;
+}
+
+.filters-panel-header {
+  display: none;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  border-bottom: 1px solid #e5e7eb;
+  margin: -1rem -1rem 1rem -1rem;
+  background: white;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.filters-panel-header span {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #1a1a2e;
+}
+
+.filter-close-btn {
+  background: none;
+  border: none;
+  padding: 0.5rem;
+  cursor: pointer;
+  color: #666;
+  border-radius: 8px;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.filter-close-btn:hover {
+  background: #f3f4f6;
+  color: #1a1a2e;
 }
 
 .job-list-content {
@@ -1093,7 +1129,8 @@
   }
 
   .filter-toggle {
-    display: block;
+    display: inline-flex;
+    width: auto;
   }
 
   .filters-panel {
@@ -1111,6 +1148,10 @@
 
   .filters-panel.open {
     display: block;
+  }
+
+  .filters-panel-header {
+    display: flex;
   }
 
   .job-details-container {
