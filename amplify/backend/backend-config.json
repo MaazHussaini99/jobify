@@ -73,6 +73,11 @@
           "attributes": ["UserPoolId"],
           "category": "auth",
           "resourceName": "jobify18018b92"
+        },
+        {
+          "attributes": ["GraphQLAPIIdOutput"],
+          "category": "api",
+          "resourceName": "jobify"
         }
       ],
       "providerPlugin": "awscloudformation",

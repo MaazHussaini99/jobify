@@ -5,6 +5,12 @@
         "resourceName": "jobify18018b92",
         "attributes": ["UserPoolId"]
       }
+    ],
+    "api": [
+      {
+        "resourceName": "jobify",
+        "attributes": ["GraphQLAPIIdOutput"]
+      }
     ]
   }
 }
