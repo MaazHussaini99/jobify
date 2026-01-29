@@ -62,6 +62,7 @@ export const getUserProfile = /* GraphQL */ `
         startDate
         timezone
         preferredSchedule
+        availableWithin
       }
       hourlyRate
       preferredJobTypes
@@ -170,6 +171,7 @@ export const listProfessionals = /* GraphQL */ `
         availability {
           status
           hoursPerWeek
+          availableWithin
         }
         hourlyRate
         totalJobsCompleted
@@ -681,6 +683,7 @@ export const searchProfessionals = /* GraphQL */ `
         }
         availability {
           status
+          availableWithin
         }
         hourlyRate
         averageRating
