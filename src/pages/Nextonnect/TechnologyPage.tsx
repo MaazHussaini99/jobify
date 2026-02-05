@@ -2,6 +2,13 @@ import React from 'react';
 import Hero from '../../components/Nextonnect/ui/Hero';
 import PublicLayout from '../../components/Nextonnect/layout/PublicLayout';
 
+const techServices = [
+  { icon: '🤖', title: 'AI & Machine Learning', desc: 'Leverage artificial intelligence to automate processes and gain insights from your data.' },
+  { icon: '☁️', title: 'Cloud Solutions', desc: 'Scalable cloud infrastructure and migration services for modern businesses.' },
+  { icon: '🔒', title: 'Cybersecurity', desc: 'Protect your business with comprehensive security assessments and solutions.' },
+  { icon: '📱', title: 'Digital Transformation', desc: 'Modernize your operations with digital-first strategies and implementations.' },
+];
+
 const TechnologyPage: React.FC = () => {
   return (
     <PublicLayout>
@@ -12,44 +19,35 @@ const TechnologyPage: React.FC = () => {
         ctaLink="/contact"
       />
 
-      <section className="py-20 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">Our Technology Services</h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+      <section style={{ padding: '5rem 0', backgroundColor: 'white' }}>
+        <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '0 1rem' }}>
+          <div style={{ textAlign: 'center', marginBottom: '4rem' }}>
+            <h2 style={{ fontSize: '2.5rem', fontWeight: 'bold', color: '#111827', marginBottom: '1rem' }}>
+              Our Technology Services
+            </h2>
+            <p style={{ fontSize: '1.25rem', color: '#4b5563', maxWidth: '48rem', margin: '0 auto' }}>
               Innovative technology solutions tailored to your business needs.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <div className="bg-gray-50 p-8 rounded-lg">
-              <div className="text-4xl mb-4">🤖</div>
-              <h3 className="text-xl font-bold text-gray-900 mb-2">AI & Machine Learning</h3>
-              <p className="text-gray-600">
-                Leverage artificial intelligence to automate processes and gain insights from your data.
-              </p>
-            </div>
-            <div className="bg-gray-50 p-8 rounded-lg">
-              <div className="text-4xl mb-4">☁️</div>
-              <h3 className="text-xl font-bold text-gray-900 mb-2">Cloud Solutions</h3>
-              <p className="text-gray-600">
-                Scalable cloud infrastructure and migration services for modern businesses.
-              </p>
-            </div>
-            <div className="bg-gray-50 p-8 rounded-lg">
-              <div className="text-4xl mb-4">🔒</div>
-              <h3 className="text-xl font-bold text-gray-900 mb-2">Cybersecurity</h3>
-              <p className="text-gray-600">
-                Protect your business with comprehensive security assessments and solutions.
-              </p>
-            </div>
-            <div className="bg-gray-50 p-8 rounded-lg">
-              <div className="text-4xl mb-4">📱</div>
-              <h3 className="text-xl font-bold text-gray-900 mb-2">Digital Transformation</h3>
-              <p className="text-gray-600">
-                Modernize your operations with digital-first strategies and implementations.
-              </p>
-            </div>
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+            gap: '2rem'
+          }}>
+            {techServices.map((service) => (
+              <div key={service.title} style={{
+                backgroundColor: '#f9fafb',
+                padding: '2rem',
+                borderRadius: '8px'
+              }}>
+                <div style={{ fontSize: '2.5rem', marginBottom: '1rem' }}>{service.icon}</div>
+                <h3 style={{ fontSize: '1.25rem', fontWeight: 'bold', color: '#111827', marginBottom: '0.5rem' }}>
+                  {service.title}
+                </h3>
+                <p style={{ color: '#4b5563' }}>{service.desc}</p>
+              </div>
+            ))}
           </div>
         </div>
       </section>

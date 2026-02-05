@@ -18,25 +18,40 @@ const footerLinks = {
   ],
 };
 
+const linkStyle: React.CSSProperties = {
+  color: '#9ca3af',
+  textDecoration: 'none',
+  fontSize: '0.875rem',
+  transition: 'color 0.2s',
+};
+
 const Footer: React.FC = () => {
   return (
-    <footer className="bg-gray-900 text-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+    <footer style={{ backgroundColor: '#111827', color: 'white' }}>
+      <div style={{
+        maxWidth: '1280px',
+        margin: '0 auto',
+        padding: '3rem 1rem'
+      }}>
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+          gap: '2rem'
+        }}>
           {/* Brand */}
-          <div className="col-span-1 md:col-span-1">
-            <div className="flex items-center space-x-2 mb-4">
+          <div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '1rem' }}>
               <img
                 src="/nextonnect-logo.png"
                 alt="Nextonnect Logo"
-                className="h-10 w-auto"
+                style={{ height: '40px', width: 'auto' }}
               />
-              <div className="text-xl font-bold">
-                <span className="text-blue-400">Next</span>
-                <span className="text-brand-yellow-500">onnect</span>
+              <div style={{ fontSize: '1.25rem', fontWeight: 'bold' }}>
+                <span style={{ color: '#60a5fa' }}>Next</span>
+                <span style={{ color: '#f59e0b' }}>onnect</span>
               </div>
             </div>
-            <p className="text-gray-400 text-sm">
+            <p style={{ color: '#9ca3af', fontSize: '0.875rem' }}>
               Connecting talent, technology, compliance, and training to drive
               your business forward.
             </p>
@@ -44,13 +59,15 @@ const Footer: React.FC = () => {
 
           {/* Services */}
           <div>
-            <h3 className="text-lg font-semibold mb-4">Services</h3>
-            <ul className="space-y-2">
+            <h3 style={{ fontSize: '1.125rem', fontWeight: 600, marginBottom: '1rem' }}>Services</h3>
+            <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
               {footerLinks.services.map((link) => (
-                <li key={link.name}>
+                <li key={link.name} style={{ marginBottom: '0.5rem' }}>
                   <Link
                     to={link.href}
-                    className="text-gray-400 hover:text-brand-yellow-500 transition-colors text-sm"
+                    style={linkStyle}
+                    onMouseOver={(e) => e.currentTarget.style.color = '#f59e0b'}
+                    onMouseOut={(e) => e.currentTarget.style.color = '#9ca3af'}
                   >
                     {link.name}
                   </Link>
@@ -61,13 +78,15 @@ const Footer: React.FC = () => {
 
           {/* Company */}
           <div>
-            <h3 className="text-lg font-semibold mb-4">Company</h3>
-            <ul className="space-y-2">
+            <h3 style={{ fontSize: '1.125rem', fontWeight: 600, marginBottom: '1rem' }}>Company</h3>
+            <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
               {footerLinks.company.map((link) => (
-                <li key={link.name}>
+                <li key={link.name} style={{ marginBottom: '0.5rem' }}>
                   <Link
                     to={link.href}
-                    className="text-gray-400 hover:text-brand-yellow-500 transition-colors text-sm"
+                    style={linkStyle}
+                    onMouseOver={(e) => e.currentTarget.style.color = '#f59e0b'}
+                    onMouseOut={(e) => e.currentTarget.style.color = '#9ca3af'}
                   >
                     {link.name}
                   </Link>
@@ -78,43 +97,52 @@ const Footer: React.FC = () => {
 
           {/* Contact */}
           <div>
-            <h3 className="text-lg font-semibold mb-4">Contact</h3>
-            <ul className="space-y-2 text-sm text-gray-400">
-              <li>Email: info@nextonnect.com</li>
-              <li>Phone: 826-255-8238</li>
-              <li className="mt-4">
-                <div className="flex space-x-4">
-                  <a
-                    href="https://linkedin.com"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="hover:text-brand-yellow-500 transition-colors"
-                  >
-                    LinkedIn
-                  </a>
-                </div>
+            <h3 style={{ fontSize: '1.125rem', fontWeight: 600, marginBottom: '1rem' }}>Contact</h3>
+            <ul style={{ listStyle: 'none', padding: 0, margin: 0, fontSize: '0.875rem', color: '#9ca3af' }}>
+              <li style={{ marginBottom: '0.5rem' }}>Email: info@nextonnect.com</li>
+              <li style={{ marginBottom: '0.5rem' }}>Phone: 826-255-8238</li>
+              <li style={{ marginTop: '1rem' }}>
+                <a
+                  href="https://linkedin.com"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{ color: '#9ca3af', textDecoration: 'none', transition: 'color 0.2s' }}
+                  onMouseOver={(e) => e.currentTarget.style.color = '#f59e0b'}
+                  onMouseOut={(e) => e.currentTarget.style.color = '#9ca3af'}
+                >
+                  LinkedIn
+                </a>
               </li>
             </ul>
           </div>
         </div>
 
         {/* Bottom Bar */}
-        <div className="mt-8 pt-8 border-t border-gray-800">
-          <div className="flex flex-col md:flex-row justify-between items-center">
-            <p className="text-gray-400 text-sm">
-              © 2026 Nextonnect. All rights reserved.
-            </p>
-            <div className="flex space-x-6 mt-4 md:mt-0">
-              {footerLinks.legal.map((link) => (
-                <Link
-                  key={link.name}
-                  to={link.href}
-                  className="text-gray-400 hover:text-brand-yellow-500 transition-colors text-sm"
-                >
-                  {link.name}
-                </Link>
-              ))}
-            </div>
+        <div style={{
+          marginTop: '2rem',
+          paddingTop: '2rem',
+          borderTop: '1px solid #374151',
+          display: 'flex',
+          flexWrap: 'wrap',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          gap: '1rem'
+        }}>
+          <p style={{ color: '#9ca3af', fontSize: '0.875rem', margin: 0 }}>
+            © 2026 Nextonnect. All rights reserved.
+          </p>
+          <div style={{ display: 'flex', gap: '1.5rem' }}>
+            {footerLinks.legal.map((link) => (
+              <Link
+                key={link.name}
+                to={link.href}
+                style={linkStyle}
+                onMouseOver={(e) => e.currentTarget.style.color = '#f59e0b'}
+                onMouseOut={(e) => e.currentTarget.style.color = '#9ca3af'}
+              >
+                {link.name}
+              </Link>
+            ))}
           </div>
         </div>
       </div>

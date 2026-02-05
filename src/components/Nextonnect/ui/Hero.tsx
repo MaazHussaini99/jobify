@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 
 interface HeroProps {
@@ -16,25 +16,75 @@ const Hero: React.FC<HeroProps> = ({
   ctaLink = '/contact',
   showLearnMore = true,
 }) => {
+  const [learnMoreHovered, setLearnMoreHovered] = useState(false);
+  const [ctaHovered, setCtaHovered] = useState(false);
+
   return (
-    <div className="relative bg-gradient-to-br from-brand-blue-900 via-brand-blue-800 to-brand-blue-700 text-white">
-      <div className="absolute inset-0 bg-black opacity-10"></div>
-      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 md:py-32">
-        <div className="text-center">
-          <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight">
+    <div style={{
+      position: 'relative',
+      background: 'linear-gradient(to bottom right, #1e3a8a, #1e40af, #1d4ed8)',
+      color: 'white'
+    }}>
+      <div style={{
+        position: 'absolute',
+        inset: 0,
+        backgroundColor: 'black',
+        opacity: 0.1
+      }}></div>
+      <div style={{
+        position: 'relative',
+        maxWidth: '1280px',
+        margin: '0 auto',
+        padding: '6rem 1rem'
+      }}>
+        <div style={{ textAlign: 'center' }}>
+          <h1 style={{
+            fontSize: 'clamp(2rem, 5vw, 3.75rem)',
+            fontWeight: 'bold',
+            marginBottom: '1.5rem',
+            lineHeight: 1.1
+          }}>
             {title}
           </h1>
-          <p className="text-xl md:text-2xl text-blue-100 mb-8 max-w-3xl mx-auto leading-relaxed">
+          <p style={{
+            fontSize: 'clamp(1.125rem, 2vw, 1.5rem)',
+            color: '#bfdbfe',
+            marginBottom: '2rem',
+            maxWidth: '48rem',
+            margin: '0 auto 2rem',
+            lineHeight: 1.6
+          }}>
             {subtitle}
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          <div style={{
+            display: 'flex',
+            flexDirection: 'row',
+            flexWrap: 'wrap',
+            gap: '1rem',
+            justifyContent: 'center'
+          }}>
             <Link
               to={ctaLink}
-              className="inline-flex items-center justify-center px-8 py-4 rounded-md text-lg font-medium text-brand-blue-900 bg-brand-yellow-500 hover:bg-brand-yellow-600 transition-colors shadow-lg"
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                padding: '1rem 2rem',
+                borderRadius: '6px',
+                fontSize: '1.125rem',
+                fontWeight: 500,
+                color: '#1e3a8a',
+                backgroundColor: ctaHovered ? '#d97706' : '#f59e0b',
+                textDecoration: 'none',
+                transition: 'background-color 0.2s',
+                boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)'
+              }}
+              onMouseOver={() => setCtaHovered(true)}
+              onMouseOut={() => setCtaHovered(false)}
             >
               {ctaText}
               <svg
-                className="ml-2 w-5 h-5"
+                style={{ marginLeft: '0.5rem', width: '20px', height: '20px' }}
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -50,7 +100,22 @@ const Hero: React.FC<HeroProps> = ({
             {showLearnMore && (
               <Link
                 to="/about"
-                className="inline-flex items-center justify-center px-8 py-4 rounded-md text-lg font-medium text-white bg-transparent border-2 border-white hover:bg-white hover:text-brand-blue-900 transition-colors"
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  padding: '1rem 2rem',
+                  borderRadius: '6px',
+                  fontSize: '1.125rem',
+                  fontWeight: 500,
+                  color: learnMoreHovered ? '#1e3a8a' : 'white',
+                  backgroundColor: learnMoreHovered ? 'white' : 'transparent',
+                  border: '2px solid white',
+                  textDecoration: 'none',
+                  transition: 'all 0.2s'
+                }}
+                onMouseOver={() => setLearnMoreHovered(true)}
+                onMouseOut={() => setLearnMoreHovered(false)}
               >
                 Learn More
               </Link>
@@ -59,9 +124,14 @@ const Hero: React.FC<HeroProps> = ({
         </div>
       </div>
       {/* Decorative bottom wave */}
-      <div className="absolute bottom-0 left-0 right-0">
+      <div style={{
+        position: 'absolute',
+        bottom: 0,
+        left: 0,
+        right: 0
+      }}>
         <svg
-          className="w-full h-12 md:h-20"
+          style={{ width: '100%', height: '50px' }}
           preserveAspectRatio="none"
           viewBox="0 0 1440 74"
           fill="none"
