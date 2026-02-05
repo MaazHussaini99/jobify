@@ -8,9 +8,9 @@ interface PublicLayoutProps {
 
 const PublicLayout: React.FC<PublicLayoutProps> = ({ children }) => {
   return (
-    <div className="min-h-screen flex flex-col">
+    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
       <Navigation />
-      <main className="flex-grow">
+      <main style={{ flexGrow: 1 }}>
         {children}
       </main>
       <Footer />

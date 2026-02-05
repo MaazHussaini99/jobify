@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 
 interface ServiceCardProps {
@@ -16,24 +16,79 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
   href,
   color = 'blue',
 }) => {
-  const colorClasses = {
-    blue: 'bg-brand-blue-800 hover:bg-brand-blue-900',
-    yellow: 'bg-brand-yellow-600 hover:bg-brand-yellow-500',
+  const [isHovered, setIsHovered] = useState(false);
+  const [btnHovered, setBtnHovered] = useState(false);
+
+  const colorStyles = {
+    blue: {
+      default: '#1e40af',
+      hover: '#1e3a8a',
+    },
+    yellow: {
+      default: '#d97706',
+      hover: '#f59e0b',
+    },
   };
 
   return (
-    <div className="group bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
-      <div className="p-8">
-        <div className="text-5xl mb-4">{icon}</div>
-        <h3 className="text-2xl font-bold text-gray-900 mb-3">{title}</h3>
-        <p className="text-gray-600 mb-6 leading-relaxed">{description}</p>
+    <div
+      style={{
+        backgroundColor: 'white',
+        borderRadius: '8px',
+        boxShadow: isHovered
+          ? '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)'
+          : '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
+        overflow: 'hidden',
+        transition: 'all 0.3s',
+        transform: isHovered ? 'translateY(-4px)' : 'translateY(0)',
+      }}
+      onMouseOver={() => setIsHovered(true)}
+      onMouseOut={() => setIsHovered(false)}
+    >
+      <div style={{ padding: '2rem' }}>
+        <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>{icon}</div>
+        <h3 style={{
+          fontSize: '1.5rem',
+          fontWeight: 'bold',
+          color: '#111827',
+          marginBottom: '0.75rem'
+        }}>
+          {title}
+        </h3>
+        <p style={{
+          color: '#4b5563',
+          marginBottom: '1.5rem',
+          lineHeight: 1.7
+        }}>
+          {description}
+        </p>
         <Link
           to={href}
-          className={`inline-flex items-center px-6 py-3 rounded-md text-white font-medium transition-colors ${colorClasses[color]}`}
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            padding: '0.75rem 1.5rem',
+            borderRadius: '6px',
+            color: 'white',
+            fontWeight: 500,
+            textDecoration: 'none',
+            transition: 'background-color 0.2s',
+            backgroundColor: btnHovered
+              ? colorStyles[color].hover
+              : colorStyles[color].default,
+          }}
+          onMouseOver={() => setBtnHovered(true)}
+          onMouseOut={() => setBtnHovered(false)}
         >
           Learn More
           <svg
-            className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform"
+            style={{
+              marginLeft: '0.5rem',
+              width: '20px',
+              height: '20px',
+              transition: 'transform 0.2s',
+              transform: isHovered ? 'translateX(4px)' : 'translateX(0)',
+            }}
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"

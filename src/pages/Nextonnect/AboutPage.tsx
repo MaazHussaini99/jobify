@@ -14,80 +14,90 @@ const AboutPage: React.FC = () => {
       />
 
       {/* Mission Section */}
-      <section className="py-20 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+      <section style={{ padding: '5rem 0', backgroundColor: 'white' }}>
+        <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '0 1rem' }}>
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+            gap: '3rem',
+            alignItems: 'center'
+          }}>
             <div>
-              <h2 className="text-3xl font-bold text-gray-900 mb-6">Our Mission</h2>
-              <p className="text-lg text-gray-600 mb-4">
+              <h2 style={{ fontSize: '1.875rem', fontWeight: 'bold', color: '#111827', marginBottom: '1.5rem' }}>
+                Our Mission
+              </h2>
+              <p style={{ fontSize: '1.125rem', color: '#4b5563', marginBottom: '1rem' }}>
                 At Nextonnect, we believe in the power of connection. Our mission is to
                 bridge the gap between exceptional talent and forward-thinking organizations,
                 while providing the technology, compliance, and training solutions needed
                 for sustainable success.
               </p>
-              <p className="text-lg text-gray-600">
+              <p style={{ fontSize: '1.125rem', color: '#4b5563' }}>
                 We are committed to delivering personalized, innovative solutions that
                 address the unique challenges of each client we serve.
               </p>
             </div>
-            <div className="bg-gradient-to-br from-brand-blue-800 to-brand-blue-900 rounded-2xl p-8 text-white">
-              <h3 className="text-2xl font-bold mb-4">Our Values</h3>
-              <ul className="space-y-4">
-                <li className="flex items-start">
-                  <span className="text-brand-yellow-500 mr-3">✓</span>
-                  <span><strong>Integrity:</strong> Honest, transparent partnerships</span>
-                </li>
-                <li className="flex items-start">
-                  <span className="text-brand-yellow-500 mr-3">✓</span>
-                  <span><strong>Excellence:</strong> Delivering outstanding results</span>
-                </li>
-                <li className="flex items-start">
-                  <span className="text-brand-yellow-500 mr-3">✓</span>
-                  <span><strong>Innovation:</strong> Embracing new solutions</span>
-                </li>
-                <li className="flex items-start">
-                  <span className="text-brand-yellow-500 mr-3">✓</span>
-                  <span><strong>Partnership:</strong> Your success is our success</span>
-                </li>
+            <div style={{
+              background: 'linear-gradient(to bottom right, #1e40af, #1e3a8a)',
+              borderRadius: '16px',
+              padding: '2rem',
+              color: 'white'
+            }}>
+              <h3 style={{ fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '1rem' }}>Our Values</h3>
+              <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
+                {[
+                  { title: 'Integrity', desc: 'Honest, transparent partnerships' },
+                  { title: 'Excellence', desc: 'Delivering outstanding results' },
+                  { title: 'Innovation', desc: 'Embracing new solutions' },
+                  { title: 'Partnership', desc: 'Your success is our success' },
+                ].map((item) => (
+                  <li key={item.title} style={{ display: 'flex', alignItems: 'flex-start', marginBottom: '1rem' }}>
+                    <span style={{ color: '#f59e0b', marginRight: '0.75rem' }}>✓</span>
+                    <span><strong>{item.title}:</strong> {item.desc}</span>
+                  </li>
+                ))}
               </ul>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Team Section */}
-      <section className="py-20 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">Our Approach</h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+      {/* Approach Section */}
+      <section style={{ padding: '5rem 0', backgroundColor: '#f9fafb' }}>
+        <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '0 1rem' }}>
+          <div style={{ textAlign: 'center', marginBottom: '4rem' }}>
+            <h2 style={{ fontSize: '2.5rem', fontWeight: 'bold', color: '#111827', marginBottom: '1rem' }}>
+              Our Approach
+            </h2>
+            <p style={{ fontSize: '1.25rem', color: '#4b5563', maxWidth: '48rem', margin: '0 auto' }}>
               We take a holistic approach to business solutions, understanding that
               talent, technology, compliance, and training are interconnected.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="bg-white p-8 rounded-lg shadow-lg">
-              <div className="text-4xl mb-4">🎯</div>
-              <h3 className="text-xl font-bold text-gray-900 mb-2">Understand</h3>
-              <p className="text-gray-600">
-                We start by deeply understanding your business, challenges, and goals.
-              </p>
-            </div>
-            <div className="bg-white p-8 rounded-lg shadow-lg">
-              <div className="text-4xl mb-4">🔧</div>
-              <h3 className="text-xl font-bold text-gray-900 mb-2">Customize</h3>
-              <p className="text-gray-600">
-                We develop tailored solutions that address your specific needs.
-              </p>
-            </div>
-            <div className="bg-white p-8 rounded-lg shadow-lg">
-              <div className="text-4xl mb-4">🚀</div>
-              <h3 className="text-xl font-bold text-gray-900 mb-2">Deliver</h3>
-              <p className="text-gray-600">
-                We implement with precision and provide ongoing support for success.
-              </p>
-            </div>
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
+            gap: '2rem'
+          }}>
+            {[
+              { icon: '🎯', title: 'Understand', desc: 'We start by deeply understanding your business, challenges, and goals.' },
+              { icon: '🔧', title: 'Customize', desc: 'We develop tailored solutions that address your specific needs.' },
+              { icon: '🚀', title: 'Deliver', desc: 'We implement with precision and provide ongoing support for success.' },
+            ].map((item) => (
+              <div key={item.title} style={{
+                backgroundColor: 'white',
+                padding: '2rem',
+                borderRadius: '8px',
+                boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)'
+              }}>
+                <div style={{ fontSize: '2.5rem', marginBottom: '1rem' }}>{item.icon}</div>
+                <h3 style={{ fontSize: '1.25rem', fontWeight: 'bold', color: '#111827', marginBottom: '0.5rem' }}>
+                  {item.title}
+                </h3>
+                <p style={{ color: '#4b5563' }}>{item.desc}</p>
+              </div>
+            ))}
           </div>
         </div>
       </section>
