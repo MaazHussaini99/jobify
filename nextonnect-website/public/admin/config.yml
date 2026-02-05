@@ -1,0 +1,63 @@
+backend:
+  name: github
+  repo: MaazHussaini99/safety
+  branch: claude/nextonnect-website-build-011sZkmZv7nPGgZXruSF6gXc
+  base_url: https://oauth-ashen.vercel.app/api
+
+# Enable editorial workflow (Draft → Review → Publish)
+publish_mode: editorial_workflow
+
+# For local development, uncomment below and run: npx decap-server
+# local_backend: true
+
+media_folder: "public/images/uploads"
+public_folder: "/images/uploads"
+
+collections:
+  - name: "talent"
+    label: "Talent Solutions"
+    folder: "content/talent"
+    create: true
+    slug: "{{slug}}"
+    fields:
+      - {label: "Title", name: "title", widget: "string"}
+      - {label: "Description", name: "description", widget: "text"}
+      - {label: "Icon (emoji)", name: "icon", widget: "string", required: false}
+      - {label: "Order", name: "order", widget: "number", default: 1, value_type: "int"}
+      - {label: "Body", name: "body", widget: "markdown"}
+
+  - name: "technology"
+    label: "Technology Solutions"
+    folder: "content/technology"
+    create: true
+    slug: "{{slug}}"
+    fields:
+      - {label: "Title", name: "title", widget: "string"}
+      - {label: "Description", name: "description", widget: "text"}
+      - {label: "Icon (emoji)", name: "icon", widget: "string", required: false}
+      - {label: "Order", name: "order", widget: "number", default: 1, value_type: "int"}
+      - {label: "Body", name: "body", widget: "markdown"}
+
+  - name: "compliance"
+    label: "Compliance Solutions"
+    folder: "content/compliance"
+    create: true
+    slug: "{{slug}}"
+    fields:
+      - {label: "Title", name: "title", widget: "string"}
+      - {label: "Description", name: "description", widget: "text"}
+      - {label: "Icon (emoji)", name: "icon", widget: "string", required: false}
+      - {label: "Order", name: "order", widget: "number", default: 1, value_type: "int"}
+      - {label: "Body", name: "body", widget: "markdown"}
+
+  - name: "training"
+    label: "Training & Development"
+    folder: "content/training"
+    create: true
+    slug: "{{slug}}"
+    fields:
+      - {label: "Title", name: "title", widget: "string"}
+      - {label: "Description", name: "description", widget: "text"}
+      - {label: "Icon (emoji)", name: "icon", widget: "string", required: false}
+      - {label: "Order", name: "order", widget: "number", default: 1, value_type: "int"}
+      - {label: "Body", name: "body", widget: "markdown"}
