@@ -33,6 +33,15 @@ import { ResumeUpload, ResumeExport } from './components/Resume';
 
 // Pages
 import { HomePage, Dashboard } from './pages';
+import {
+  HomePage as NextonnectHome,
+  AboutPage,
+  TalentPage,
+  TechnologyPage,
+  CompliancePage,
+  TrainingPage,
+  ContactPage
+} from './pages/Nextonnect';
 
 // Styles
 import './App.css';
@@ -98,7 +107,7 @@ const AppLayout: React.FC<{ children: React.ReactNode; showFooter?: boolean }> =
   );
 };
 
-// Home Route - redirects to dashboard if authenticated
+// Home Route - redirects to dashboard if authenticated, shows Nextonnect landing for public
 const HomeRoute: React.FC = () => {
   const { isAuthenticated, isLoading } = useAuth();
 
@@ -117,11 +126,8 @@ const HomeRoute: React.FC = () => {
     return <Navigate to="/dashboard" replace />;
   }
 
-  return (
-    <AppLayout>
-      <HomePage />
-    </AppLayout>
-  );
+  // Show Nextonnect landing page for non-authenticated users
+  return <NextonnectHome />;
 };
 
 // App Routes
@@ -130,6 +136,14 @@ const AppRoutes: React.FC = () => {
     <Routes>
       {/* Home - redirects to dashboard if authenticated */}
       <Route path="/" element={<HomeRoute />} />
+
+      {/* Nextonnect Public Pages */}
+      <Route path="/about" element={<AboutPage />} />
+      <Route path="/talent" element={<TalentPage />} />
+      <Route path="/technology" element={<TechnologyPage />} />
+      <Route path="/compliance" element={<CompliancePage />} />
+      <Route path="/training" element={<TrainingPage />} />
+      <Route path="/contact" element={<ContactPage />} />
 
       {/* Auth Routes */}
       <Route
