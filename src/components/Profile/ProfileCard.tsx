@@ -8,6 +8,7 @@ import './Profile.css';
 interface ProfileCardProps {
   profile: UserProfile;
   showActions?: boolean;
+  hideName?: boolean;
   onMessage?: (profile: UserProfile) => void;
   onInvite?: (profile: UserProfile) => void;
 }
@@ -15,10 +16,12 @@ interface ProfileCardProps {
 const ProfileCard: React.FC<ProfileCardProps> = ({
   profile,
   showActions = true,
+  hideName = false,
   onMessage,
   onInvite
 }) => {
-  const fullName = `${profile.firstName} ${profile.lastName}`;
+  const fullName = hideName ? 'Professional' : `${profile.firstName} ${profile.lastName}`;
+  const initials = hideName ? 'P' : `${profile.firstName[0]}${profile.lastName[0]}`;
   const topSkills = profile.skills?.slice(0, 5) || [];
   const profilePictureUrl = useStorageUrl(profile.profilePicture);
 
@@ -26,11 +29,11 @@ const ProfileCard: React.FC<ProfileCardProps> = ({
     <div className="profile-card">
       <Link to={`/profile/${profile.id}`} className="profile-card-link">
         <div className="card-avatar">
-          {profilePictureUrl ? (
+          {profilePictureUrl && !hideName ? (
             <img src={profilePictureUrl} alt={fullName} />
           ) : (
             <div className="avatar-placeholder">
-              {profile.firstName[0]}{profile.lastName[0]}
+              {initials}
             </div>
           )}
           {profile.availability?.status === 'AVAILABLE' && (
