@@ -352,6 +352,7 @@ const ProfessionalSearch: React.FC = () => {
                     key={prof.id}
                     profile={prof}
                     showActions={profile?.userType === 'EMPLOYER'}
+                    hideName={profile?.userType === 'EMPLOYER'}
                     onMessage={handleMessage}
                     onInvite={handleInvite}
                   />

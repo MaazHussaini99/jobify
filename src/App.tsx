@@ -4,8 +4,8 @@ import { Amplify } from 'aws-amplify';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import amplifyConfig from './amplifyconfiguration';
 
-// Layout
-import { Header, Footer } from './components/Layout';
+// Nextonnect Layout
+import PublicLayout from './components/Nextonnect/layout/PublicLayout';
 
 // Auth Components
 import { SignUp, SignIn, ConfirmSignUp, ForgotPassword, ResetPassword, NewPasswordRequired } from './components/Auth';
@@ -32,7 +32,7 @@ import { ScheduleMeeting } from './components/Meetings';
 import { ResumeUpload, ResumeExport } from './components/Resume';
 
 // Pages
-import { HomePage, Dashboard } from './pages';
+import { Dashboard } from './pages';
 import {
   HomePage as NextonnectHome,
   AboutPage,
@@ -93,17 +93,12 @@ const PublicRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   return <>{children}</>;
 };
 
-// Main App Layout
-const AppLayout: React.FC<{ children: React.ReactNode; showFooter?: boolean }> = ({
-  children,
-  showFooter = true
-}) => {
+// Main App Layout using Nextonnect Navigation and Footer
+const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   return (
-    <div className="app">
-      <Header />
-      <main className="main-content">{children}</main>
-      {showFooter && <Footer />}
-    </div>
+    <PublicLayout>
+      {children}
+    </PublicLayout>
   );
 };
 
@@ -150,7 +145,9 @@ const AppRoutes: React.FC = () => {
         path="/signin"
         element={
           <PublicRoute>
-            <SignIn />
+            <AppLayout>
+              <SignIn />
+            </AppLayout>
           </PublicRoute>
         }
       />
@@ -158,7 +155,9 @@ const AppRoutes: React.FC = () => {
         path="/signup"
         element={
           <PublicRoute>
-            <SignUp />
+            <AppLayout>
+              <SignUp />
+            </AppLayout>
           </PublicRoute>
         }
       />
@@ -166,7 +165,9 @@ const AppRoutes: React.FC = () => {
         path="/confirm-signup"
         element={
           <PublicRoute>
-            <ConfirmSignUp />
+            <AppLayout>
+              <ConfirmSignUp />
+            </AppLayout>
           </PublicRoute>
         }
       />
@@ -174,7 +175,9 @@ const AppRoutes: React.FC = () => {
         path="/forgot-password"
         element={
           <PublicRoute>
-            <ForgotPassword />
+            <AppLayout>
+              <ForgotPassword />
+            </AppLayout>
           </PublicRoute>
         }
       />
@@ -182,13 +185,19 @@ const AppRoutes: React.FC = () => {
         path="/reset-password"
         element={
           <PublicRoute>
-            <ResetPassword />
+            <AppLayout>
+              <ResetPassword />
+            </AppLayout>
           </PublicRoute>
         }
       />
       <Route
         path="/new-password"
-        element={<NewPasswordRequired />}
+        element={
+          <AppLayout>
+            <NewPasswordRequired />
+          </AppLayout>
+        }
       />
 
       {/* Dashboard */}
@@ -276,7 +285,7 @@ const AppRoutes: React.FC = () => {
         path="/messages/*"
         element={
           <ProtectedRoute>
-            <AppLayout showFooter={false}>
+            <AppLayout>
               <MessagesPage />
             </AppLayout>
           </ProtectedRoute>
